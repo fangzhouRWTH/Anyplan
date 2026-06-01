@@ -20,22 +20,25 @@ It is intentionally independent of a specific repository, language, build system
 2. **Memory Layer**
    Defines how project memory is divided into working rules, current state, decisions, evidence, roadmap state, development history, and methodology.
 
-3. **Role Layer**
+3. **Context Retrieval Layer**
+   Defines how much project memory should be loaded for a task, which documents are default context, which are phase-level summaries, and which are on-demand deep sources.
+
+4. **Role Layer**
    Defines the responsibilities, permissions, and handoff rules of human owners, AI collaborators, reviewers, maintainers, and visual tools.
 
-4. **Workflow Layer**
+5. **Workflow Layer**
    Represents development as explicit stages such as intent capture, context recovery, planning, implementation, validation, and record keeping.
 
-5. **Boundary Layer**
+6. **Boundary Layer**
    Defines ownership boundaries for modules, APIs, dependencies, experiments, tooling, and documentation.
 
-6. **Verification Layer**
+7. **Verification Layer**
    Defines how AI-assisted work is checked through commands, tests, review, visible behavior, and human-verifiable instructions.
 
-7. **Interface Layer**
+8. **Interface Layer**
    Defines structured objects exchanged between humans, AI agents, tools, and visual editors.
 
-8. **Instance Layer**
+9. **Instance Layer**
    Maps the framework into a concrete project through a `guidance.json` file and related project documents.
 
 ## Instantiation Model
@@ -48,7 +51,7 @@ A project instance should include:
 - `workflows`: visualizable process stages.
 - `constraints`: required or recommended rules.
 - `interfaces`: structured descriptions exchanged by humans, AI agents, and tools.
-- `documents`: authoritative document map.
+- `documents`: authoritative document map, optionally including memory type, retrieval tier, context cost, read triggers, and invalidation cues.
 - `changeControl`: rules for changing the framework, instance, and engine.
 - `selfGovernance`: how the project records its own use of the framework.
 

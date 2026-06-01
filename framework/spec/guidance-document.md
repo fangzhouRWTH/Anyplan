@@ -103,7 +103,38 @@ A guidance framework should distinguish different types of project memory:
 
 This separation keeps retrieval efficient by giving each type of knowledge a clear source of truth.
 
-## 7. Constraints
+## 7. Context Budget and Retrieval Depth
+
+A guidance framework should not assume that every useful document belongs in every AI context window.
+
+Project instances should separate **authority** from **retrieval depth**:
+
+- Authority answers which source wins when guidance conflicts.
+- Retrieval depth answers which sources should be loaded for a task.
+- Document size is a context cost, not a measure of authority.
+
+Recommended retrieval tiers:
+
+- **Task scope**: the small active working contract for the current task. It names the goal, allowed scope, known assumptions, required checks, and when the AI should request or perform context expansion.
+- **Phase context**: a compact summary prepared for a phase, milestone, release, or comparable work interval. It should summarize relevant lower-level documents, point back to sources, and identify stale or invalidated sections.
+- **Deep source**: detailed architecture, decisions, reports, logs, module descriptions, and historical records. These are read on demand, not by default.
+- **Archive**: old evidence and chronological history that should only be read when a task needs provenance, forensic debugging, or a deliberate direction change.
+
+Project instances may also maintain a document manifest. A manifest is a routing table, not another narrative layer. It should identify:
+
+- document id, path, title, and memory type;
+- authority level and retrieval tier;
+- default read behavior;
+- context cost;
+- source and summary relationships;
+- triggers that justify reading deeper sources;
+- invalidation cues when code, phase state, or decisions change.
+
+AI collaborators should expand context deliberately. Expansion is appropriate when a task changes public contracts, dependencies, module ownership, high-risk implementation boundaries, current assumptions, or when summaries conflict with source documents or code.
+
+The goal is not to forbid deep reading. The goal is to make deep reading intentional, explainable, and proportional.
+
+## 8. Constraints
 
 Constraints define boundaries that should not be broken casually. Each constraint should include:
 
@@ -123,7 +154,7 @@ Recommended categories:
 - `documentation`: language, hierarchy, evidence, decision records, and update policy.
 - `interaction`: visual editing, human confirmation, and workflow adjustment.
 
-## 8. Boundary Rules
+## 9. Boundary Rules
 
 Projects should make ownership boundaries explicit when they affect future development.
 
@@ -139,7 +170,7 @@ Reusable boundary types include:
 
 A project can instantiate this abstract rule through modules, package boundaries, API contracts, service ownership, generated-code boundaries, deployment units, or tool/runtime separation.
 
-## 9. Custom Description Interfaces
+## 10. Custom Description Interfaces
 
 Custom description interfaces turn human intent, AI state, tool actions, and document changes into structured objects.
 
@@ -160,8 +191,9 @@ Recommended base interfaces:
 - `WorkflowPatch`: proposed workflow adjustment.
 - `GuidanceChange`: proposed guidance-document change.
 - `VerificationReport`: validation commands, results, and residual risks.
+- `RetrievalScope`: current context budget, allowed document tiers, loaded sources, expansion triggers, and reasons for reading deep sources.
 
-## 10. Visual Engine Integration
+## 11. Visual Engine Integration
 
 A visual engine must at least read:
 
@@ -172,7 +204,7 @@ A visual engine must at least read:
 
 The engine may edit project instances, but it should not silently modify the portable framework body. Framework-body changes should follow `changeControl`.
 
-## 11. Change Control
+## 12. Change Control
 
 Guidance documents should distinguish three change classes:
 
@@ -182,7 +214,7 @@ Guidance documents should distinguish three change classes:
 
 Each meaningful change should describe motivation, impact, validation, and rollback path.
 
-## 12. Self-Governance
+## 13. Self-Governance
 
 When a project develops the framework or its own guidance, it should record:
 

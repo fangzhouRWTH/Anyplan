@@ -30,6 +30,7 @@ The abstract framework behind those commitments is broader:
 - Make durable rules explicit.
 - Keep current state easy to recover.
 - Separate evidence from decisions.
+- Separate document authority from retrieval depth.
 - Build through validated vertical slices.
 - Preserve ownership boundaries.
 - Assign every dependency to an owner.
@@ -86,7 +87,21 @@ Generic application:
 
 - The exact filenames can change, but AI agents need a stable map from question type to source of truth.
 
-### 4. Vertical Slice Growth
+### 4. Bounded Context Retrieval
+
+Abstract rule:
+
+- Projects with growing documentation should define task-scope context, phase-level summaries, and on-demand deep sources instead of asking AI collaborators to reread the whole archive.
+
+Anygine instance:
+
+- `Doc/ProjectState.md` was created as a short context-recovery document, and the project later needed stronger routing because detailed decisions, reference reports, roadmaps, and logs started to drift across documents.
+
+Generic application:
+
+- A project can maintain a document manifest that identifies authority, retrieval tier, context cost, read triggers, and invalidation cues. Deep documents remain available, but reading them should be intentional and justified by task risk or stale summaries.
+
+### 5. Vertical Slice Growth
 
 Abstract rule:
 
@@ -102,7 +117,7 @@ Generic application:
 - A frontend tool can use a load-edit-save slice.
 - A data system can use an ingest-transform-query slice.
 
-### 5. Boundary Visibility
+### 6. Boundary Visibility
 
 Abstract rule:
 
@@ -119,7 +134,7 @@ Generic application:
 
 - A project can apply the same rule through packages, services, adapters, plugin boundaries, generated-code boundaries, or deployment units.
 
-### 6. Dependency Ownership
+### 7. Dependency Ownership
 
 Abstract rule:
 
@@ -135,7 +150,7 @@ Generic application:
 
 - The same pattern applies to npm, Python packages, Rust crates, service clients, SDKs, model weights, or hosted APIs.
 
-### 7. Evidence Before Binding Decisions
+### 8. Evidence Before Binding Decisions
 
 Abstract rule:
 
@@ -150,7 +165,7 @@ Generic application:
 
 - Architecture research, vendor comparisons, benchmarks, and prototype reviews should not silently become decisions without an explicit decision record.
 
-### 8. Active Consistency Checks
+### 9. Active Consistency Checks
 
 Abstract rule:
 
@@ -164,7 +179,7 @@ Generic application:
 
 - AI agents should treat project guidance as an operational constraint, not as a passive archive.
 
-### 9. Candid Technical Critique
+### 10. Candid Technical Critique
 
 Abstract rule:
 
@@ -178,7 +193,7 @@ Generic application:
 
 - Each project should define its own high-risk domains where AI is expected to be especially direct.
 
-### 10. Human-Reproducible Validation
+### 11. Human-Reproducible Validation
 
 Abstract rule:
 
@@ -192,7 +207,7 @@ Generic application:
 
 - Validation should not depend only on hidden AI-side command output. It should be reproducible in the project owner's normal environment.
 
-### 11. Proportional Documentation Updates
+### 12. Proportional Documentation Updates
 
 Abstract rule:
 
@@ -215,6 +230,7 @@ A project that instantiates this framework should map the abstract rules to conc
 | --- | --- |
 | Central rules | Primary contract or guidance file |
 | Current state | Short state snapshot and update triggers |
+| Context retrieval | Task scope, phase summaries, deep-source triggers, and manifest metadata |
 | Decisions | Decision log or ADR policy |
 | Evidence | Reference-report or analysis-record policy |
 | Roadmap | Phase, task, status, and blocker tracking |
@@ -229,9 +245,9 @@ Anygine can instantiate Anyplan by binding the generalized rules to its existing
 
 - `project.documentationLanguage`: English.
 - `principles`: Vulkan visibility, lightweight systems, vertical slices, simulation-training readiness, transparent AI collaboration.
-- `documents`: WorkingContract, ProjectState, DecisionLog, Roadmap, Reference, architecture documents, and module READMEs.
+- `documents`: WorkingContract, ProjectState, GuidanceManifest, PhaseContext, DecisionLog, Roadmap, Reference, architecture documents, and module READMEs.
 - `constraints`: public/private API boundaries, Conan-first dependency policy, static-library-first targets, diagnostics usage, project-relative paths, validation-layer policy.
 - `workflows`: phase-task workflow from contract check through implementation, validation, roadmap update, and decision logging.
-- `interfaces`: task brief, context snapshot, dependency proposal, boundary change, verification report, roadmap update, and decision entry.
+- `interfaces`: task brief, context snapshot, retrieval scope, dependency proposal, boundary change, verification report, roadmap update, and decision entry.
 
 This keeps Anygine concrete while letting the Anyplan framework remain portable.

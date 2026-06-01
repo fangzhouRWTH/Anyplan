@@ -1,11 +1,11 @@
 {
-  "schemaVersion": "0.1.0",
+  "schemaVersion": "0.2.0",
   "project": {
     "id": "anyplan",
     "name": "Anyplan",
     "purpose": "Develop a portable guidance framework for AI-assisted software development and a visual interaction engine for browsing, editing, and adjusting instantiated project guidance.",
     "documentationLanguage": "English",
-    "context": "The project is in its bootstrap stage. The current priority is to define a portable framework, instantiate it for Anyplan, keep concrete project research separate from framework definitions, and keep the visual engine aligned with the structured guidance contract.",
+    "context": "The project is in its bootstrap stage. The current priority is to define a portable framework, instantiate it for Anyplan, keep concrete project research separate from framework definitions, add bounded context-retrieval guidance, and keep the visual engine aligned with the structured guidance contract.",
     "owners": ["fangzhou"]
   },
   "principles": [
@@ -38,6 +38,12 @@
       "title": "Separate memory types",
       "statement": "Rules, current state, decisions, evidence, roadmap state, development history, and methodology should be represented as distinct document types or records.",
       "rationale": "Separating memory types helps AI and humans recover the right source of truth without rereading the whole archive."
+    },
+    {
+      "id": "bounded-context-retrieval",
+      "title": "Bounded context retrieval",
+      "statement": "Projects should distinguish authority from retrieval depth and should load deep documents only when task risk, stale summaries, or explicit user intent justifies it.",
+      "rationale": "Context budgets are finite even when documents fit technically; deliberate retrieval keeps AI work focused and reduces drift from repeated summaries."
     },
     {
       "id": "vertical-slice-growth",
@@ -144,14 +150,16 @@
           "actor": "ai-coding-agent",
           "inputs": ["TaskBrief", "Guidance document map", "Repository state"],
           "actions": [
-            "Read central guidance, current state, relevant documents, and current files",
+            "Read central guidance, current state, task-scope documents, and current files first",
+            "Use retrieval-tier metadata to decide whether phase context, deep sources, or archived evidence are needed",
             "Identify existing user changes and relevant source-of-truth documents",
             "Summarize the current structure and risks"
           ],
-          "outputs": ["ContextSnapshot"],
+          "outputs": ["ContextSnapshot", "RetrievalScope"],
           "checks": [
             "Existing user work is preserved",
-            "The selected context is sufficient for the task"
+            "The selected context is sufficient for the task",
+            "Deep-source reads have a task-specific reason"
           ],
           "next": ["check-guidance"]
         },
@@ -308,6 +316,14 @@
       "severity": "recommended",
       "appliesTo": ["ai-coding-agent"],
       "validation": "Research reports may recommend actions, but durable decisions should appear in a decision log or ADR."
+    },
+    {
+      "id": "bounded-context-retrieval",
+      "category": "documentation",
+      "rule": "Project instances should route AI context through task scope, phase context, and on-demand deep sources instead of loading all durable documents by default.",
+      "severity": "recommended",
+      "appliesTo": ["ai-coding-agent", "visual-editor"],
+      "validation": "Document maps should expose retrieval tier, context cost, read triggers, or equivalent prose guidance when the project documentation set becomes nontrivial."
     },
     {
       "id": "vertical-slice-before-framework",
@@ -477,6 +493,39 @@
       ]
     },
     {
+      "id": "retrieval-scope",
+      "name": "RetrievalScope",
+      "purpose": "Describe the context budget and document tiers used for a task.",
+      "producer": "ai-coding-agent or visual-editor",
+      "consumer": "human-owner, ai-coding-agent",
+      "fields": [
+        {
+          "name": "defaultDocuments",
+          "type": "string[]",
+          "required": true,
+          "description": "Documents loaded by default for the current task or phase."
+        },
+        {
+          "name": "allowedTiers",
+          "type": "task-scope[] | phase-context[] | deep-source[] | archive[]",
+          "required": true,
+          "description": "Retrieval tiers allowed without additional user confirmation."
+        },
+        {
+          "name": "deepReadReasons",
+          "type": "object[]",
+          "required": false,
+          "description": "Deep source documents read and the task-specific reason for reading them."
+        },
+        {
+          "name": "invalidatedSummaries",
+          "type": "string[]",
+          "required": false,
+          "description": "Summaries or phase context records that appear stale and require refresh."
+        }
+      ]
+    },
+    {
       "id": "verification-report",
       "name": "VerificationReport",
       "purpose": "Record validation commands, results, and residual risk.",
@@ -511,7 +560,12 @@
       "path": "README.md",
       "kind": "framework",
       "scope": "project",
-      "portable": false
+      "portable": false,
+      "memoryType": "overview",
+      "retrievalTier": "task-scope",
+      "defaultRead": "task",
+      "contextCost": "small",
+      "lastReviewed": "2026-06-01"
     },
     {
       "id": "framework-readme",
@@ -519,7 +573,13 @@
       "path": "framework/README.md",
       "kind": "framework",
       "scope": "portable",
-      "portable": true
+      "portable": true,
+      "memoryType": "rule",
+      "authority": "central-contract",
+      "retrievalTier": "task-scope",
+      "defaultRead": "task",
+      "contextCost": "small",
+      "lastReviewed": "2026-06-01"
     },
     {
       "id": "guidance-spec",
@@ -527,7 +587,18 @@
       "path": "framework/spec/guidance-document.md",
       "kind": "spec",
       "scope": "portable",
-      "portable": true
+      "portable": true,
+      "memoryType": "rule",
+      "authority": "central-contract",
+      "retrievalTier": "phase-context",
+      "defaultRead": "phase",
+      "contextCost": "medium",
+      "readTriggers": [
+        "Changing guidance semantics",
+        "Adding new schema concepts",
+        "Designing a new project instance"
+      ],
+      "lastReviewed": "2026-06-01"
     },
     {
       "id": "research-index",
@@ -535,7 +606,12 @@
       "path": "docs/research/README.md",
       "kind": "research",
       "scope": "project",
-      "portable": false
+      "portable": false,
+      "memoryType": "overview",
+      "retrievalTier": "phase-context",
+      "defaultRead": "on-demand",
+      "contextCost": "small",
+      "lastReviewed": "2026-06-01"
     },
     {
       "id": "anygine-extraction-research",
@@ -543,7 +619,17 @@
       "path": "docs/research/anygine-framework-extraction.md",
       "kind": "research",
       "scope": "project",
-      "portable": false
+      "portable": false,
+      "memoryType": "evidence",
+      "authority": "evidence",
+      "retrievalTier": "deep-source",
+      "defaultRead": "on-demand",
+      "contextCost": "medium",
+      "readTriggers": [
+        "Revising Anygine-derived framework patterns",
+        "Checking whether a framework rule is still project-independent"
+      ],
+      "lastReviewed": "2026-06-01"
     },
     {
       "id": "guidance-schema",
@@ -551,7 +637,16 @@
       "path": "framework/schema/anyplan-guidance.schema.json",
       "kind": "schema",
       "scope": "portable",
-      "portable": true
+      "portable": true,
+      "memoryType": "rule",
+      "retrievalTier": "deep-source",
+      "defaultRead": "on-demand",
+      "contextCost": "medium",
+      "readTriggers": [
+        "Editing guidance JSON fields",
+        "Changing visual engine data contracts"
+      ],
+      "lastReviewed": "2026-06-01"
     },
     {
       "id": "anyplan-instance",
@@ -559,7 +654,13 @@
       "path": "instances/anyplan/guidance.json",
       "kind": "instance",
       "scope": "project",
-      "portable": false
+      "portable": false,
+      "memoryType": "state",
+      "authority": "current-state",
+      "retrievalTier": "task-scope",
+      "defaultRead": "always",
+      "contextCost": "medium",
+      "lastReviewed": "2026-06-01"
     },
     {
       "id": "visual-engine",
@@ -567,7 +668,16 @@
       "path": "engine/index.html",
       "kind": "engine",
       "scope": "tooling",
-      "portable": false
+      "portable": false,
+      "memoryType": "tooling",
+      "retrievalTier": "deep-source",
+      "defaultRead": "on-demand",
+      "contextCost": "medium",
+      "readTriggers": [
+        "Changing visual engine behavior",
+        "Checking whether new guidance fields are displayed or safely ignored"
+      ],
+      "lastReviewed": "2026-06-01"
     },
     {
       "id": "adr-0001",
@@ -575,7 +685,13 @@
       "path": "docs/adr/0001-bootstrap-ai-collaboration-framework.md",
       "kind": "adr",
       "scope": "project",
-      "portable": false
+      "portable": false,
+      "memoryType": "decision",
+      "authority": "decision-record",
+      "retrievalTier": "archive",
+      "defaultRead": "archive",
+      "contextCost": "small",
+      "lastReviewed": "2026-06-01"
     },
     {
       "id": "adr-0002",
@@ -583,7 +699,28 @@
       "path": "docs/adr/0002-english-docs-and-research-extraction.md",
       "kind": "adr",
       "scope": "project",
-      "portable": false
+      "portable": false,
+      "memoryType": "decision",
+      "authority": "decision-record",
+      "retrievalTier": "archive",
+      "defaultRead": "archive",
+      "contextCost": "small",
+      "lastReviewed": "2026-06-01"
+    },
+    {
+      "id": "adr-0003",
+      "title": "ADR 0003: Bounded Context Retrieval",
+      "path": "docs/adr/0003-bounded-context-retrieval.md",
+      "kind": "adr",
+      "scope": "project",
+      "portable": false,
+      "memoryType": "decision",
+      "authority": "decision-record",
+      "retrievalTier": "phase-context",
+      "defaultRead": "phase",
+      "contextCost": "small",
+      "sourceDocuments": ["guidance-spec", "anygine-extraction-research"],
+      "lastReviewed": "2026-06-01"
     },
     {
       "id": "collaboration-log",
@@ -591,7 +728,13 @@
       "path": "docs/ai-collaboration-log.md",
       "kind": "log",
       "scope": "project",
-      "portable": false
+      "portable": false,
+      "memoryType": "log",
+      "authority": "log",
+      "retrievalTier": "archive",
+      "defaultRead": "archive",
+      "contextCost": "medium",
+      "lastReviewed": "2026-06-01"
     }
   ],
   "changeControl": {

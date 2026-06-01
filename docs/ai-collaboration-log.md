@@ -150,3 +150,43 @@ This document records how Anyplan uses its own AI collaboration framework while 
 
 - Should research notes have a first-class schema separate from project guidance?
 - Should the visual engine display research documents in a separate lane from framework and instance documents?
+
+## 2026-06-01 Bounded Context Retrieval Methodology
+
+### TaskBrief
+
+- `intent`: Turn the Anygine documentation-scale review into a portable Anyplan methodology for bounded AI context retrieval.
+- `scope`: Framework overview, guidance specification, schema, Anyplan instance guidance, ADRs, research note, and collaboration log.
+- `acceptance`: The framework distinguishes authority from retrieval depth, project instances can tag document retrieval metadata, and the change remains portable rather than Anygine-specific.
+- `unknowns`: How the visual engine should display context tiers and whether future task-scope objects should be persisted separately from guidance JSON.
+
+### ContextSnapshot
+
+- `filesRead`: Anyplan framework documents, schema, guidance instance, ADRs, collaboration log, and the sibling Anygine documentation map.
+- `currentStructure`: Anyplan had memory-type separation but no first-class retrieval-depth model.
+- `risks`: Adding methodology directly from Anygine could overfit the portable framework to one project unless restated as abstract context routing.
+
+### ChangedArtifacts
+
+- `README.md`
+- `framework/README.md`
+- `framework/spec/guidance-document.md`
+- `framework/schema/anyplan-guidance.schema.json`
+- `instances/anyplan/guidance.json`
+- `docs/research/anygine-framework-extraction.md`
+- `docs/adr/README.md`
+- `docs/adr/0003-bounded-context-retrieval.md`
+- `docs/ai-collaboration-log.md`
+
+### Verification
+
+- `python3 -m json.tool framework/schema/anyplan-guidance.schema.json`: passed.
+- `python3 -m json.tool instances/anyplan/guidance.json`: passed.
+- `python3 -c "import json, jsonschema; ..."`: Anyplan instance passed Draft 2020-12 schema validation.
+- `rg -n -P "[\\x{4e00}-\\x{9fff}]" README.md framework docs instances engine`: no durable Chinese prose found.
+- Paired Anygine instantiation added a guidance manifest and Phase 2 context pack without code changes.
+
+### OpenQuestions
+
+- Should visual-editor UI show retrieval tiers as lanes or as document badges?
+- Should task-scope state become a generated artifact, an in-memory object, or a persisted project file?

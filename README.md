@@ -43,6 +43,7 @@ Anyplan treats AI-assisted development as a describable, inspectable, and adjust
 - Project purpose, scope, current state, and documentation language.
 - Human and AI roles, including authority and handoff rules.
 - Workflow steps from intent capture to validation and record keeping.
+- Context retrieval depth, including task-scope documents, phase summaries, and on-demand deep sources.
 - Engineering, documentation, communication, safety, and interaction constraints.
 - Custom description interfaces for task briefs, context snapshots, workflow patches, guidance changes, and verification reports.
 - Change-control rules for framework, instance, and engine updates.
