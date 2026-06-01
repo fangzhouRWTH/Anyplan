@@ -8,8 +8,13 @@ The repository has three responsibilities:
 - Provide a visual engine that can browse, edit, and adjust instantiated project guidance.
 - Use the framework to develop itself, so the framework is tested by its own workflow.
 
+## Adopting the Framework in Your Project
+
+See **[docs/adopting-the-framework.md](docs/adopting-the-framework.md)** for a step-by-step guide: Git clone or submodule, scaffold `instances/<project-id>/guidance.json` with [scripts/init-instance.sh](scripts/init-instance.sh), validate with [scripts/validate-guidance.sh](scripts/validate-guidance.sh), optional Cursor/Codex prompts, and wiring agents to the central guidance instance.
+
 ## Repository Map
 
+- [docs/adopting-the-framework.md](docs/adopting-the-framework.md): how to apply Anyplan in your own repository.
 - [framework/README.md](framework/README.md): overview of the portable AI collaboration framework.
 - [framework/spec/guidance-document.md](framework/spec/guidance-document.md): guidance document specification.
 - [framework/schema/anyplan-guidance.schema.json](framework/schema/anyplan-guidance.schema.json): machine-readable schema for guidance instances.

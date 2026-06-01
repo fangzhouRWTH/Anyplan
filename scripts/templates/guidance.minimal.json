@@ -1,0 +1,363 @@
+{
+  "schemaVersion": "0.2.0",
+  "project": {
+    "id": "{{PROJECT_ID}}",
+    "name": "{{PROJECT_NAME}}",
+    "purpose": "{{PROJECT_PURPOSE}}",
+    "documentationLanguage": "{{DOCUMENTATION_LANGUAGE}}",
+    "context": "{{PROJECT_CONTEXT}}",
+    "owners": {{PROJECT_OWNERS_JSON}}
+  },
+  "principles": [
+    {
+      "id": "central-contract",
+      "title": "Central working contract",
+      "statement": "This guidance instance is the central working contract for AI-assisted development in this project.",
+      "rationale": "A single structured source of truth reduces conflicting instructions across sessions and tools."
+    },
+    {
+      "id": "bounded-context",
+      "title": "Bounded context retrieval",
+      "statement": "Load task-scope and current-state documents first; read deep sources only when task risk or stale summaries require it.",
+      "rationale": "Context windows are finite; deliberate retrieval keeps work focused and auditable."
+    }
+  ],
+  "roles": [
+    {
+      "id": "human-owner",
+      "name": "Human Project Owner",
+      "responsibilities": [
+        "Define goals, acceptance criteria, and high-impact direction",
+        "Approve changes to central guidance and durable architecture"
+      ],
+      "permissions": [
+        "Change project goals",
+        "Accept or reject AI proposals"
+      ],
+      "handoffRules": [
+        "High-impact guidance or architecture changes require explicit human confirmation"
+      ]
+    },
+    {
+      "id": "ai-coding-agent",
+      "name": "AI Coding Agent",
+      "responsibilities": [
+        "Recover context from the guidance instance and repository",
+        "Implement scoped changes and run available validation",
+        "Record conflicts, verification, and open questions"
+      ],
+      "permissions": [
+        "Edit repository files within task scope",
+        "Run local non-destructive commands"
+      ],
+      "handoffRules": [
+        "Do not revert or overwrite user changes outside the current task",
+        "Surface GuidanceConflict before proceeding on material conflicts"
+      ]
+    }
+  ],
+  "workflows": [
+    {
+      "id": "default-collaboration-loop",
+      "name": "Default Collaboration Loop",
+      "entrypoints": ["user-request", "bugfix", "feature", "documentation"],
+      "steps": [
+        {
+          "id": "capture-intent",
+          "title": "Capture Intent",
+          "purpose": "Turn a request into a bounded TaskBrief.",
+          "actor": "human-owner, ai-coding-agent",
+          "inputs": ["User request", "Guidance instance"],
+          "actions": [
+            "State goal, scope, acceptance clues, and unknowns",
+            "Flag high-impact choices for human confirmation"
+          ],
+          "outputs": ["TaskBrief"],
+          "checks": ["Deliverable is identifiable", "Scope is explicit"],
+          "next": ["recover-context"]
+        },
+        {
+          "id": "recover-context",
+          "title": "Recover Context",
+          "purpose": "Read the smallest authoritative context needed to act safely.",
+          "actor": "ai-coding-agent",
+          "inputs": ["TaskBrief", "Document map", "Repository state"],
+          "actions": [
+            "Read central guidance and current-state documents first",
+            "Expand to deep sources only with a task-specific reason",
+            "Preserve existing user changes"
+          ],
+          "outputs": ["ContextSnapshot", "RetrievalScope"],
+          "checks": [
+            "Context is sufficient for the task",
+            "Deep reads are justified"
+          ],
+          "next": ["check-guidance"]
+        },
+        {
+          "id": "check-guidance",
+          "title": "Check Guidance",
+          "purpose": "Compare the request against durable rules.",
+          "actor": "ai-coding-agent",
+          "inputs": ["TaskBrief", "Principles", "Constraints"],
+          "actions": [
+            "Detect conflicts with constraints and document authority",
+            "Propose guidance updates when direction intentionally changes"
+          ],
+          "outputs": ["GuidanceConflict or clearance"],
+          "checks": ["Material conflicts are not ignored"],
+          "next": ["plan-change"]
+        },
+        {
+          "id": "plan-change",
+          "title": "Plan Change",
+          "purpose": "Define a small, verifiable implementation path.",
+          "actor": "ai-coding-agent",
+          "inputs": ["TaskBrief", "ContextSnapshot"],
+          "actions": [
+            "Choose the smallest useful change",
+            "Define validation steps the owner can reproduce"
+          ],
+          "outputs": ["Implementation plan"],
+          "checks": ["Plan matches task scope"],
+          "next": ["implement-change"]
+        },
+        {
+          "id": "implement-change",
+          "title": "Implement Change",
+          "purpose": "Complete the scoped change.",
+          "actor": "ai-coding-agent",
+          "inputs": ["Implementation plan"],
+          "actions": ["Edit code and documentation within scope"],
+          "outputs": ["Diff"],
+          "checks": ["No unrelated refactors"],
+          "next": ["verify-change"]
+        },
+        {
+          "id": "verify-change",
+          "title": "Verify Change",
+          "purpose": "Validate behavior and report residual risk.",
+          "actor": "ai-coding-agent",
+          "inputs": ["Diff"],
+          "actions": [
+            "Run tests, lint, schema validation, or manual checks as available",
+            "State what was not verified"
+          ],
+          "outputs": ["VerificationReport"],
+          "checks": ["Main risks are covered or explicitly deferred"],
+          "next": ["record-decision"]
+        },
+        {
+          "id": "record-decision",
+          "title": "Record Decision",
+          "purpose": "Update the smallest authoritative document set.",
+          "actor": "ai-coding-agent, human-owner",
+          "inputs": ["VerificationReport", "Diff"],
+          "actions": [
+            "Update project state, ADRs, or collaboration log when impact is durable",
+            "Summarize open questions and next actions"
+          ],
+          "outputs": ["Collaboration record", "Final summary"],
+          "checks": ["Future sessions can recover why the change was made"],
+          "next": []
+        }
+      ],
+      "exitCriteria": [
+        "Requested outcome is delivered or blockers are explained",
+        "Available validation has been run",
+        "Durable guidance changes are recorded"
+      ]
+    }
+  ],
+  "constraints": [
+    {
+      "id": "protect-user-work",
+      "category": "repository",
+      "rule": "Do not revert or overwrite user changes that were not created in the current task.",
+      "severity": "required",
+      "appliesTo": ["ai-coding-agent"],
+      "validation": "Inspect version control status before and after edits."
+    },
+    {
+      "id": "guidance-schema",
+      "category": "quality",
+      "rule": "The guidance instance must remain valid JSON and validate against the Anyplan schema when validation is available.",
+      "severity": "required",
+      "appliesTo": ["ai-coding-agent", "human-owner"],
+      "validation": "Run scripts/validate-guidance.sh on the instance after structural edits."
+    },
+    {
+      "id": "human-reproducible-validation",
+      "category": "communication",
+      "rule": "Meaningful completion summaries should include commands and checks the project owner can reproduce.",
+      "severity": "recommended",
+      "appliesTo": ["ai-coding-agent"],
+      "validation": "Final reports list commands, expected results, and unverified items."
+    }
+  ],
+  "interfaces": [
+    {
+      "id": "task-brief",
+      "name": "TaskBrief",
+      "purpose": "Executable task boundary for the current request.",
+      "producer": "human-owner or ai-coding-agent",
+      "consumer": "ai-coding-agent",
+      "fields": [
+        {
+          "name": "intent",
+          "type": "string",
+          "required": true,
+          "description": "Core outcome requested."
+        },
+        {
+          "name": "scope",
+          "type": "string[]",
+          "required": true,
+          "description": "Allowed files, modules, or concepts."
+        },
+        {
+          "name": "acceptance",
+          "type": "string[]",
+          "required": false,
+          "description": "Completion signals."
+        },
+        {
+          "name": "unknowns",
+          "type": "string[]",
+          "required": false,
+          "description": "Open questions to clarify or record."
+        }
+      ]
+    },
+    {
+      "id": "context-snapshot",
+      "name": "ContextSnapshot",
+      "purpose": "Summarize context recovered for the task.",
+      "producer": "ai-coding-agent",
+      "consumer": "human-owner, ai-coding-agent",
+      "fields": [
+        {
+          "name": "filesRead",
+          "type": "string[]",
+          "required": true,
+          "description": "Important files read."
+        },
+        {
+          "name": "currentStructure",
+          "type": "string",
+          "required": true,
+          "description": "Relevant repository or subsystem structure."
+        },
+        {
+          "name": "risks",
+          "type": "string[]",
+          "required": false,
+          "description": "Risks affecting implementation or validation."
+        }
+      ]
+    },
+    {
+      "id": "verification-report",
+      "name": "VerificationReport",
+      "purpose": "Record validation performed and residual risk.",
+      "producer": "ai-coding-agent",
+      "consumer": "human-owner",
+      "fields": [
+        {
+          "name": "checks",
+          "type": "object[]",
+          "required": true,
+          "description": "Each check with command or method and result."
+        },
+        {
+          "name": "ownerSteps",
+          "type": "string[]",
+          "required": false,
+          "description": "Steps the owner can run independently."
+        },
+        {
+          "name": "residualRisk",
+          "type": "string[]",
+          "required": false,
+          "description": "Unverified or deferred items."
+        }
+      ]
+    }
+  ],
+  "documents": [
+    {
+      "id": "project-readme",
+      "title": "Project README",
+      "path": "README.md",
+      "kind": "framework",
+      "scope": "project",
+      "portable": false,
+      "memoryType": "overview",
+      "retrievalTier": "task-scope",
+      "defaultRead": "task",
+      "contextCost": "small"
+    },
+    {
+      "id": "guidance-instance",
+      "title": "Project Guidance Instance",
+      "path": "{{INSTANCE_PATH}}",
+      "kind": "instance",
+      "scope": "project",
+      "portable": false,
+      "memoryType": "rule",
+      "authority": "central-contract",
+      "retrievalTier": "task-scope",
+      "defaultRead": "always",
+      "contextCost": "medium"
+    },
+    {
+      "id": "project-state",
+      "title": "Project State",
+      "path": "docs/ProjectState.md",
+      "kind": "framework",
+      "scope": "project",
+      "portable": false,
+      "memoryType": "state",
+      "authority": "current-state",
+      "retrievalTier": "task-scope",
+      "defaultRead": "task",
+      "contextCost": "small"
+    },
+    {
+      "id": "collaboration-log",
+      "title": "AI Collaboration Log",
+      "path": "{{RECORD_PATH}}",
+      "kind": "log",
+      "scope": "project",
+      "portable": false,
+      "memoryType": "log",
+      "authority": "log",
+      "retrievalTier": "archive",
+      "defaultRead": "archive",
+      "contextCost": "medium"
+    }
+  ],
+  "changeControl": {
+    "versioning": "During early adoption, prefer additive schema fields and document changes in the collaboration log.",
+    "proposalRequiredFor": [
+      "Changing central authority order",
+      "Removing required constraints",
+      "Changing the active workflow id without migration notes"
+    ],
+    "reviewChecklist": [
+      "Document map paths exist or are planned",
+      "Constraints match how the team actually works",
+      "Validation commands in constraints are runnable in this repository"
+    ]
+  },
+  "selfGovernance": {
+    "activeWorkflow": "default-collaboration-loop",
+    "recordPath": "{{RECORD_PATH}}",
+    "minimumRecord": [
+      "TaskBrief",
+      "ContextSnapshot",
+      "verification",
+      "openQuestions"
+    ]
+  }
+}
