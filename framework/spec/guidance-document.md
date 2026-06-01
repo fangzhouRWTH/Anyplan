@@ -195,14 +195,22 @@ Recommended base interfaces:
 
 ## 11. Visual Engine Integration
 
+The visual engine reads a **guidance instance** plus a **project dashboard** when available. See [document-generation.md](document-generation.md) for the dashboard JSON contract and file layout.
+
 A visual engine must at least read:
 
-- `documents`
-- `workflows`
-- `constraints`
-- `interfaces`
+- `instances/<project-id>/guidance.json` — principles, constraints, document map, workflows
+- `instances/<project-id>/dashboard.json` — overview, macro roadmap, completed tasks, current-phase tasks (recommended)
+- Linked `documentPath` files declared in the dashboard or document map
 
-The engine may edit project instances, but it should not silently modify the portable framework body. Framework-body changes should follow `changeControl`.
+The primary engine UI is organized as:
+
+1. Project overview
+2. Macro roadmap (phases and milestones)
+3. Completed tasks
+4. Current phase task progress
+
+The engine may edit project instances in future versions, but it should not silently modify the portable framework body. Framework-body changes should follow `changeControl`.
 
 ## 12. Change Control
 

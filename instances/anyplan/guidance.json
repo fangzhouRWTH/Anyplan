@@ -102,9 +102,9 @@
       "id": "visual-editor",
       "name": "Visual Interaction Engine",
       "responsibilities": [
-        "Display documents, workflows, constraints, and interfaces",
-        "Allow users to edit project instance guidance",
-        "Export guidance JSON or future guidance patches"
+        "Display project overview, roadmap, completed tasks, and current-phase progress from dashboard.json",
+        "Load linked Markdown and JSON source documents in a detail reader",
+        "Read guidance.json for document authority and project contract metadata"
       ],
       "permissions": [
         "Read project instance guidance",
@@ -659,6 +659,78 @@
       "authority": "current-state",
       "retrievalTier": "task-scope",
       "defaultRead": "always",
+      "contextCost": "medium",
+      "lastReviewed": "2026-06-01"
+    },
+    {
+      "id": "doc-index",
+      "title": "Generated Document Index",
+      "path": "instances/anyplan/doc-index.json",
+      "kind": "instance",
+      "scope": "tooling",
+      "portable": false,
+      "memoryType": "manifest",
+      "retrievalTier": "task-scope",
+      "defaultRead": "task",
+      "contextCost": "small",
+      "lastReviewed": "2026-06-01"
+    },
+    {
+      "id": "project-dashboard",
+      "title": "Anyplan Project Dashboard",
+      "path": "instances/anyplan/dashboard.json",
+      "kind": "instance",
+      "scope": "project",
+      "portable": false,
+      "memoryType": "roadmap",
+      "authority": "roadmap",
+      "retrievalTier": "task-scope",
+      "defaultRead": "task",
+      "contextCost": "small",
+      "lastReviewed": "2026-06-01"
+    },
+    {
+      "id": "project-state",
+      "title": "Project State",
+      "path": "docs/ProjectState.md",
+      "kind": "framework",
+      "scope": "project",
+      "portable": false,
+      "memoryType": "state",
+      "authority": "current-state",
+      "retrievalTier": "task-scope",
+      "defaultRead": "task",
+      "contextCost": "small",
+      "lastReviewed": "2026-06-01"
+    },
+    {
+      "id": "document-generation-spec",
+      "title": "Document Generation Specification",
+      "path": "framework/spec/document-generation.md",
+      "kind": "spec",
+      "scope": "portable",
+      "portable": true,
+      "memoryType": "rule",
+      "authority": "central-contract",
+      "retrievalTier": "phase-context",
+      "defaultRead": "on-demand",
+      "contextCost": "medium",
+      "readTriggers": [
+        "Scaffolding dashboard.json",
+        "Connecting the visual engine to project documents"
+      ],
+      "lastReviewed": "2026-06-01"
+    },
+    {
+      "id": "adopting-framework",
+      "title": "Adopting the Framework",
+      "path": "docs/adopting-the-framework.md",
+      "kind": "framework",
+      "scope": "project",
+      "portable": false,
+      "memoryType": "methodology",
+      "retrievalTier": "phase-context",
+      "defaultRead": "on-demand",
       "contextCost": "medium",
       "lastReviewed": "2026-06-01"
     },

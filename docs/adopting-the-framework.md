@@ -183,19 +183,43 @@ You can also add a short pointer in the repository root `AGENTS.md` if your team
 - Pass the prompt in [scripts/prompts/instantiate-from-existing-docs.md](../scripts/prompts/instantiate-from-existing-docs.md) for bootstrap or major refreshes.
 - Ensure the agent can run shell validation or you run it in CI (see below).
 
-## Step 6 — Browse with the Visual Engine (Optional)
+## Step 6 — Project Dashboard (Visual Engine Data)
 
-From the Anyplan repository root:
+Create structured progress data for the GUI:
 
 ```bash
-python3 -m http.server 5173
+scripts/init-instance.sh ... --with-dashboard
+# or copy scripts/templates/dashboard.minimal.json to instances/<id>/dashboard.json
+
+scripts/validate-dashboard.sh instances/my-app/dashboard.json
 ```
 
-Open `http://localhost:5173/engine/`. The MVP loads [instances/anyplan/guidance.json](../instances/anyplan/guidance.json) when served over HTTP. Use it to inspect workflows, constraints, and document maps. The engine does not yet write changes back to disk; edit JSON in your editor or via AI and re-validate.
+Format: [framework/spec/document-generation.md](../framework/spec/document-generation.md). The dashboard defines four sections the engine displays: overview, macro roadmap, completed tasks, and current-phase progress.
 
-To point the engine at your instance in a fork, adjust `engine/app.js` load path or serve your repo root that contains `instances/<id>/guidance.json`.
+Keep `dashboard.json` in sync with `docs/ProjectState.md` when phase or task status changes.
 
-## Step 7 — Day-to-Day Workflow
+## Step 7 — Document Index and Visual Engine
+
+Build a filtered markdown index (only files that match markers, paths, or guidance/dashboard links):
+
+```bash
+python3 scripts/build-doc-index.py --project-id my-app --repo-root .
+scripts/validate-doc-index.sh instances/my-app/doc-index.json
+```
+
+Start the engine (index build + HTTP server):
+
+```bash
+scripts/serve.sh my-app 5173
+```
+
+The script opens `http://localhost:5173/engine/?instance=my-app` in your default browser. Pass `--no-browser` if you are on SSH or CI.
+
+The UI shows the **dashboard tree** (overview, roadmap, completed, current phase)—not a raw repository listing. Structured fields appear first; full Markdown loads only when you click **Show markdown**, and only for paths listed in `doc-index.json`. JSON contracts are not dumped as raw preview.
+
+Rebuild `doc-index.json` after adding project markdown or changing inclusion markers. See [framework/spec/document-generation.md](../framework/spec/document-generation.md) §6.
+
+## Step 8 — Day-to-Day Workflow
 
 For each meaningful task, AI collaborators should:
 
@@ -236,6 +260,7 @@ mkdir -p docs/adr docs/research
 | --- | --- |
 | [scripts/init-instance.sh](../scripts/init-instance.sh) | Create `instances/<id>/guidance.json` and optional prose stubs |
 | [scripts/validate-guidance.sh](../scripts/validate-guidance.sh) | JSON + schema validation |
+| [scripts/validate-dashboard.sh](../scripts/validate-dashboard.sh) | Dashboard JSON validation |
 | [scripts/templates/guidance.minimal.json](../scripts/templates/guidance.minimal.json) | Minimal instance template |
 | [scripts/prompts/instantiate-from-existing-docs.md](../scripts/prompts/instantiate-from-existing-docs.md) | Cursor/Codex bootstrap prompt |
 
@@ -256,6 +281,7 @@ See [scripts/README.md](../scripts/README.md) for a short index.
 You have adopted the framework successfully when:
 
 - [ ] `instances/<project-id>/guidance.json` validates against the schema.
+- [ ] `instances/<project-id>/dashboard.json` validates and powers the visual engine menu.
 - [ ] The document map lists real paths that exist (or are explicitly planned).
 - [ ] At least one constraint references a command your team actually runs.
 - [ ] Cursor or Codex instructions point to the instance before implementation work.

@@ -3,96 +3,63 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Anyplan Workflow Engine</title>
+    <title>Anyplan — Project Dashboard</title>
     <link rel="stylesheet" href="./styles.css">
   </head>
   <body>
-    <main class="shell">
-      <aside class="sidebar" aria-label="Guidance navigation">
-        <div class="brand">
-          <div>
-            <span class="eyebrow">Anyplan</span>
-            <h1>AI Collaboration</h1>
-          </div>
-          <span class="version" id="schemaVersion">0.1.0</span>
+    <header class="topbar">
+      <div class="brand">
+        <span class="brandMark">&gt;_</span>
+        <div>
+          <span class="brandLabel">Anyplan</span>
+          <h1 id="projectTitle">Project Dashboard</h1>
         </div>
-
-        <div class="loadbar">
-          <label class="fileButton">
-            <input id="importFile" type="file" accept="application/json">
-            Import JSON
-          </label>
-          <button id="exportButton" type="button">Export</button>
-        </div>
-
-        <label class="search">
-          <span>Search</span>
-          <input id="searchInput" type="search" autocomplete="off">
+      </div>
+      <div class="topbarActions">
+        <label class="selectWrap">
+          <span>Instance</span>
+          <select id="instanceSelect" aria-label="Guidance instance"></select>
         </label>
+        <button id="reloadButton" type="button">Reload</button>
+      </div>
+      <p id="statusLine" class="statusLine" role="status">Loading…</p>
+    </header>
 
-        <nav class="navGroup" aria-label="Documents">
-          <h2>Documents</h2>
-          <div id="documentList" class="itemList"></div>
-        </nav>
-
-        <nav class="navGroup" aria-label="Workflows">
-          <h2>Workflows</h2>
-          <div id="workflowList" class="itemList"></div>
-        </nav>
-
-        <nav class="navGroup" aria-label="Constraints">
-          <h2>Constraints</h2>
-          <div id="constraintList" class="itemList"></div>
-        </nav>
+    <main class="layout">
+      <aside class="treePanel" aria-label="Project structure">
+        <div class="panelHead">
+          <h2>Dashboard</h2>
+          <input id="filterInput" type="search" placeholder="Filter…" autocomplete="off">
+          <p id="indexMeta" class="indexMeta"></p>
+        </div>
+        <nav id="treeRoot" class="tree"></nav>
       </aside>
 
-      <section class="workspace" aria-label="Workflow graph">
-        <header class="workspaceHeader">
-          <div>
-            <span class="eyebrow" id="projectName">Anyplan</span>
-            <h2 id="workflowTitle">Default AI Collaboration Loop</h2>
-          </div>
-          <div class="iconBar" aria-label="Workflow actions">
-            <button id="addStepButton" type="button" title="Add stage" aria-label="Add stage">+</button>
-            <button id="moveUpButton" type="button" title="Move stage up" aria-label="Move stage up">↑</button>
-            <button id="moveDownButton" type="button" title="Move stage down" aria-label="Move stage down">↓</button>
-            <button id="deleteButton" type="button" title="Delete selected item" aria-label="Delete selected item">×</button>
-          </div>
+      <section class="detailPanel" aria-label="Detail view">
+        <header class="detailHead">
+          <span id="detailBreadcrumb" class="breadcrumb">Overview</span>
+          <span id="detailBadge" class="badge"></span>
         </header>
 
-        <div class="graphWrap">
-          <svg id="workflowGraph" role="img" aria-label="Workflow graph"></svg>
-        </div>
+        <div id="structuredDetail" class="structuredDetail"></div>
 
-        <section class="interfaceStrip" aria-label="Interfaces">
-          <h2>Interfaces</h2>
-          <div id="interfaceList" class="interfaceList"></div>
-        </section>
+        <div id="docSection" class="docSection isCollapsed">
+          <div class="docSectionHead">
+            <h3>Source document</h3>
+            <div class="docActions">
+              <code id="docPath" class="docPath"></code>
+              <button id="toggleSourceButton" type="button" class="ghostButton" hidden>
+                Show markdown
+              </button>
+            </div>
+          </div>
+          <article id="docContent" class="docContent">
+            <p class="placeholder">Structured summary is shown above. Open the markdown source only when you need the full file.</p>
+          </article>
+        </div>
       </section>
-
-      <aside class="inspector" aria-label="Inspector">
-        <header class="inspectorHeader">
-          <div>
-            <span class="eyebrow" id="detailType">Project</span>
-            <h2 id="detailTitle">Anyplan</h2>
-          </div>
-          <span id="dirtyState" class="statePill">Synced</span>
-        </header>
-
-        <dl class="metaGrid" id="detailMeta"></dl>
-
-        <label class="editorLabel" for="detailEditor">JSON</label>
-        <textarea id="detailEditor" spellcheck="false"></textarea>
-
-        <div class="actionRow">
-          <button id="saveButton" type="button">Apply</button>
-          <button id="resetButton" type="button">Reset</button>
-        </div>
-
-        <p id="statusLine" class="statusLine" role="status">Ready</p>
-      </aside>
     </main>
 
-    <script src="./app.js"></script>
+    <script src="./app.js" type="module"></script>
   </body>
 </html>

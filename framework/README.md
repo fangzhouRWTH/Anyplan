@@ -65,6 +65,8 @@ instances/<project-name>/guidance.json
 
 Visual engines and automation tools should not infer workflow structure from prose. They should read structured guidance fields first, then show prose documents as explanatory and editable artifacts.
 
+Project dashboards (`instances/<project-id>/dashboard.json`) supply overview, roadmap, and task progress for the visual engine. Format: [spec/document-generation.md](spec/document-generation.md).
+
 New fields should be added so older tools can safely ignore them when possible. Breaking schema changes should include a version bump and migration note.
 
 ## Development Rule

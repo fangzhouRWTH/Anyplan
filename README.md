@@ -17,6 +17,7 @@ See **[docs/adopting-the-framework.md](docs/adopting-the-framework.md)** for a s
 - [docs/adopting-the-framework.md](docs/adopting-the-framework.md): how to apply Anyplan in your own repository.
 - [framework/README.md](framework/README.md): overview of the portable AI collaboration framework.
 - [framework/spec/guidance-document.md](framework/spec/guidance-document.md): guidance document specification.
+- [framework/spec/document-generation.md](framework/spec/document-generation.md): dashboard and engine document contract.
 - [framework/schema/anyplan-guidance.schema.json](framework/schema/anyplan-guidance.schema.json): machine-readable schema for guidance instances.
 - [instances/anyplan/guidance.json](instances/anyplan/guidance.json): Anyplan's own instantiated guidance document.
 - [engine/index.html](engine/index.html): static visual interaction engine MVP.
@@ -32,14 +33,19 @@ Development discussion may happen in another language, but durable project recor
 
 ## Open The Engine
 
-Open [engine/index.html](engine/index.html) directly to use the embedded fallback example. To let the engine load
-[instances/anyplan/guidance.json](instances/anyplan/guidance.json), start a static server from the repository root:
+Start the visual engine (builds the markdown index, then serves HTTP):
 
 ```bash
-python3 -m http.server 5173
+scripts/serve.sh anyplan 5173
 ```
 
-Then visit `http://localhost:5173/engine/`.
+This builds the document index, starts the server, and opens the dashboard in your default browser. Use `--no-browser` on headless or SSH sessions.
+
+The engine reads `guidance.json`, `dashboard.json`, and generated `doc-index.json` per [framework/spec/document-generation.md](framework/spec/document-generation.md). Rebuild the index after adding or renaming indexed markdown:
+
+```bash
+python3 scripts/build-doc-index.py --project-id anyplan --repo-root .
+```
 
 ## First Working Contract
 

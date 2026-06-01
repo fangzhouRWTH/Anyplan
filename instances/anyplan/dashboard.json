@@ -1,0 +1,156 @@
+{
+  "schemaVersion": "0.1.0",
+  "projectId": "anyplan",
+  "overview": {
+    "status": "bootstrap",
+    "summary": "Anyplan defines a portable AI collaboration framework, a schema-backed guidance instance, adoption tooling, and a visual engine. The project is validating the framework through self-application.",
+    "highlights": [
+      "Portable framework under framework/ with English specifications",
+      "Guidance instance and JSON Schema at instances/anyplan/guidance.json",
+      "Adoption guide and init/validate scripts for other repositories",
+      "Dashboard-oriented visual engine for overview, roadmap, and tasks"
+    ],
+    "documentPath": "docs/ProjectState.md",
+    "documentId": "project-state"
+  },
+  "roadmap": {
+    "summary": "Establish the guidance contract and tooling first, then deepen visual editing, validation automation, and multi-instance support.",
+    "phases": [
+      {
+        "id": "phase-1-bootstrap",
+        "title": "Bootstrap framework and engine",
+        "status": "active",
+        "summary": "Portable spec, Anyplan instance, static engine, research boundary, bounded context retrieval, adoption path.",
+        "milestones": [
+          {
+            "id": "m-framework-spec",
+            "title": "Framework specification",
+            "summary": "guidance-document.md and framework README.",
+            "status": "completed"
+          },
+          {
+            "id": "m-schema-instance",
+            "title": "Schema and Anyplan instance",
+            "summary": "anyplan-guidance.schema.json and instances/anyplan/guidance.json.",
+            "status": "completed"
+          },
+          {
+            "id": "m-adoption-tooling",
+            "title": "Adoption tooling",
+            "summary": "init-instance, validate-guidance, adopting-the-framework.md.",
+            "status": "completed"
+          },
+          {
+            "id": "m-dashboard-gui",
+            "title": "Dashboard visual engine",
+            "summary": "Tree navigation, detail reader, dashboard.json contract.",
+            "status": "completed"
+          }
+        ]
+      },
+      {
+        "id": "phase-2-tooling",
+        "title": "Engine and validation hardening",
+        "status": "planned",
+        "summary": "Schema validation in CI, optional engine write-back, richer document-map editing.",
+        "milestones": [
+          {
+            "id": "m-ci-validate",
+            "title": "CI validation",
+            "summary": "Guidance and dashboard checks on every change.",
+            "status": "planned"
+          },
+          {
+            "id": "m-engine-persist",
+            "title": "Guided instance export",
+            "summary": "Save dashboard and guidance edits from the engine with review.",
+            "status": "planned"
+          }
+        ]
+      },
+      {
+        "id": "phase-3-ecosystem",
+        "title": "Multi-project ecosystem",
+        "status": "planned",
+        "summary": "Multiple instances, case-study templates, optional hosted viewer.",
+        "milestones": [
+          {
+            "id": "m-multi-instance",
+            "title": "Instance switcher",
+            "summary": "Load any instances/<id>/ pair from the engine.",
+            "status": "planned"
+          }
+        ]
+      }
+    ]
+  },
+  "completedTasks": [
+    {
+      "id": "task-adr-bootstrap",
+      "title": "ADR 0001 bootstrap framework",
+      "completedAt": "2026-05-01",
+      "summary": "Documented the document + schema + instance + engine closed loop.",
+      "phaseId": "phase-1-bootstrap",
+      "documentPath": "docs/adr/0001-bootstrap-ai-collaboration-framework.md",
+      "documentId": "adr-0001"
+    },
+    {
+      "id": "task-english-research",
+      "title": "English docs and research boundary",
+      "completedAt": "2026-05-01",
+      "summary": "ADR 0002 and research directory separation from portable framework.",
+      "phaseId": "phase-1-bootstrap",
+      "documentPath": "docs/adr/0002-english-docs-and-research-extraction.md",
+      "documentId": "adr-0002"
+    },
+    {
+      "id": "task-bounded-retrieval",
+      "title": "Bounded context retrieval",
+      "completedAt": "2026-06-01",
+      "summary": "ADR 0003, schema document metadata, Anygine extraction research.",
+      "phaseId": "phase-1-bootstrap",
+      "documentPath": "docs/adr/0003-bounded-context-retrieval.md",
+      "documentId": "adr-0003"
+    },
+    {
+      "id": "task-adoption-guide",
+      "title": "Framework adoption guide and scripts",
+      "completedAt": "2026-06-01",
+      "summary": "docs/adopting-the-framework.md, init-instance.sh, validate-guidance.sh.",
+      "phaseId": "phase-1-bootstrap",
+      "documentPath": "docs/adopting-the-framework.md"
+    },
+    {
+      "id": "task-dashboard-engine",
+      "title": "Dashboard GUI and document-generation spec",
+      "completedAt": "2026-06-01",
+      "summary": "engine/ tree UI, dashboard schema, validate-dashboard.sh.",
+      "phaseId": "phase-1-bootstrap",
+      "documentPath": "framework/spec/document-generation.md",
+      "documentId": "document-generation-spec"
+    }
+  ],
+  "currentPhase": {
+    "phaseId": "phase-1-bootstrap",
+    "title": "Bootstrap framework and engine",
+    "summary": "Phase 1 deliverables are in place. Next: CI validation and optional engine write-back (phase 2).",
+    "progressPercent": 92,
+    "documentPath": "docs/ProjectState.md",
+    "tasks": [
+      {
+        "id": "task-phase1-closeout",
+        "title": "Phase 1 closeout review",
+        "status": "in-progress",
+        "summary": "Review guidance instance, dashboard data, doc-index, and adoption docs for consistency.",
+        "documentPath": "docs/ProjectState.md",
+        "documentId": "project-state"
+      },
+      {
+        "id": "task-ci-validate",
+        "title": "Add CI validation job",
+        "status": "todo",
+        "summary": "Run validate-guidance.sh and validate-dashboard.sh in CI (phase 2 tooling)."
+      }
+    ]
+  }
+}

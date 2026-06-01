@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "0.1.0",
+  "projectId": "{{PROJECT_ID}}",
+  "overview": {
+    "status": "bootstrap",
+    "summary": "{{PROJECT_PURPOSE}}",
+    "highlights": [
+      "Central guidance at instances/{{PROJECT_ID}}/guidance.json",
+      "Update this dashboard when phase or task status changes"
+    ],
+    "documentPath": "docs/ProjectState.md"
+  },
+  "roadmap": {
+    "summary": "Define macro phases for this project.",
+    "phases": [
+      {
+        "id": "phase-1",
+        "title": "First phase",
+        "status": "active",
+        "summary": "Initial delivery phase.",
+        "milestones": []
+      }
+    ]
+  },
+  "completedTasks": [],
+  "currentPhase": {
+    "phaseId": "phase-1",
+    "title": "First phase",
+    "summary": "Current work in this phase.",
+    "progressPercent": 0,
+    "documentPath": "docs/ProjectState.md",
+    "tasks": [
+      {
+        "id": "task-bootstrap",
+        "title": "Bootstrap project guidance",
+        "status": "in-progress",
+        "summary": "Fill dashboard.json and align ProjectState.md."
+      }
+    ]
+  }
+}

@@ -18,6 +18,7 @@ Options:
   --lang LANG              documentationLanguage (default: English).
   --repo-root PATH         Repository root (default: current directory).
   --with-docs              Create docs/ProjectState.md and collaboration log.
+  --with-dashboard         Create instances/<id>/dashboard.json for the visual engine.
   --force                  Overwrite existing instance file.
   -h, --help               Show this help.
 
@@ -46,6 +47,7 @@ PROJECT_CONTEXT="Early adoption of the Anyplan guidance framework. Fill in phase
 DOCUMENTATION_LANGUAGE="English"
 OWNERS=()
 WITH_DOCS=0
+WITH_DASHBOARD=0
 FORCE=0
 
 while [[ $# -gt 0 ]]; do
@@ -84,6 +86,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --with-docs)
       WITH_DOCS=1
+      shift
+      ;;
+    --with-dashboard)
+      WITH_DASHBOARD=1
       shift
       ;;
     --force)
@@ -197,6 +203,16 @@ if [[ "$WITH_DOCS" -eq 1 ]]; then
   fi
 fi
 
+if [[ "$WITH_DASHBOARD" -eq 1 ]]; then
+  DASHBOARD_FILE="$INSTANCE_DIR/dashboard.json"
+  if [[ -f "$DASHBOARD_FILE" && "$FORCE" -ne 1 ]]; then
+    echo "Skipped $DASHBOARD_FILE (already exists)."
+  else
+    render_template "$SCRIPT_DIR/templates/dashboard.minimal.json" "$DASHBOARD_FILE"
+    echo "Created $DASHBOARD_FILE"
+  fi
+fi
+
 if command -v python3 >/dev/null 2>&1; then
   python3 -m json.tool "$INSTANCE_FILE" >/dev/null
   echo "JSON syntax: OK"
@@ -204,11 +220,19 @@ fi
 
 if [[ -x "$ANYPLAN_ROOT/scripts/validate-guidance.sh" ]]; then
   echo ""
-  echo "Next: validate against schema"
+  echo "Next: validate guidance"
   echo "  $ANYPLAN_ROOT/scripts/validate-guidance.sh \"$INSTANCE_FILE\""
 fi
 
+if [[ "$WITH_DASHBOARD" -eq 1 && -x "$ANYPLAN_ROOT/scripts/validate-dashboard.sh" ]]; then
+  echo "  $ANYPLAN_ROOT/scripts/validate-dashboard.sh \"$INSTANCE_DIR/dashboard.json\""
+fi
+
+if [[ -f "$SCRIPT_DIR/build-doc-index.py" ]]; then
+  python3 "$SCRIPT_DIR/build-doc-index.py" --project-id "$PROJECT_ID" --repo-root "$REPO_ROOT" --quiet || true
+  echo "Built $INSTANCE_DIR/doc-index.json (when dashboard or guidance md paths exist)"
+fi
+
 echo ""
-echo "Optional: open the visual engine (from Anyplan repo root):"
-echo "  python3 -m http.server 5173"
-echo "  # visit http://localhost:5173/engine/ and load your instance path when supported"
+echo "Open the visual engine:"
+echo "  $ANYPLAN_ROOT/scripts/serve.sh $PROJECT_ID 5173"

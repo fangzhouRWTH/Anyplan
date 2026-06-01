@@ -1,0 +1,728 @@
+{
+  "schemaVersion": "0.1.0",
+  "projectId": "anyplan",
+  "generatedAt": "2026-06-01T10:03:17+00:00",
+  "entryCount": 13,
+  "entries": [
+    {
+      "id": "docs-adr-readme",
+      "path": "docs/adr/README.md",
+      "title": "Architecture Decision Records",
+      "category": "decision",
+      "contentType": "markdown",
+      "summary": "This directory contains durable project decisions.",
+      "inclusionReason": "path:docs/adr/",
+      "sections": [
+        {
+          "level": 1,
+          "title": "Architecture Decision Records",
+          "line": 1
+        },
+        {
+          "level": 2,
+          "title": "Records",
+          "line": 7
+        }
+      ],
+      "linkedFrom": []
+    },
+    {
+      "id": "document-generation-spec",
+      "path": "framework/spec/document-generation.md",
+      "title": "Document Generation Specification",
+      "category": "roadmap",
+      "contentType": "markdown",
+      "summary": "This specification defines how concrete projects produce documents and data files that the Anyplan visual engine can read structurally. It complements guidance-document.md (collaboration rules) and anyplan-guidance.schema.json (guidance ...",
+      "inclusionReason": "frontmatter:anyplan.index",
+      "sections": [
+        {
+          "level": 1,
+          "title": "Document Generation Specification",
+          "line": 1
+        },
+        {
+          "level": 2,
+          "title": "1. Required and Recommended Files",
+          "line": 7
+        },
+        {
+          "level": 2,
+          "title": "2. Dashboard JSON Contract",
+          "line": 19
+        },
+        {
+          "level": 3,
+          "title": "2.1 Top-Level Sections (Engine Menu)",
+          "line": 29
+        },
+        {
+          "level": 3,
+          "title": "2.2 Overview",
+          "line": 40
+        },
+        {
+          "level": 3,
+          "title": "2.3 Roadmap",
+          "line": 55
+        },
+        {
+          "level": 3,
+          "title": "2.4 Completed Tasks",
+          "line": 83
+        },
+        {
+          "level": 3,
+          "title": "2.5 Current Phase",
+          "line": 100
+        },
+        {
+          "level": 2,
+          "title": "3. Linking Dashboard to Guidance",
+          "line": 125
+        },
+        {
+          "level": 2,
+          "title": "4. Prose Document Conventions",
+          "line": 148
+        },
+        {
+          "level": 3,
+          "title": "4.1 ProjectState.md",
+          "line": 150
+        },
+        {
+          "level": 3,
+          "title": "4.2 Roadmap Markdown (Optional)",
+          "line": 161
+        }
+      ],
+      "linkedFrom": [
+        "dashboard.completed:task-dashboard-engine",
+        "guidance:document-generation-spec"
+      ],
+      "memoryType": "rule",
+      "documentId": "document-generation-spec"
+    },
+    {
+      "id": "root-readme",
+      "path": "README.md",
+      "title": "Anyplan",
+      "category": "rule",
+      "contentType": "markdown",
+      "summary": "Anyplan is a guidance framework and visual interaction engine for AI-assisted software development.",
+      "inclusionReason": "filename:README.md (repository root); guidance:root-readme",
+      "sections": [
+        {
+          "level": 1,
+          "title": "Anyplan",
+          "line": 1
+        },
+        {
+          "level": 2,
+          "title": "Adopting the Framework in Your Project",
+          "line": 11
+        },
+        {
+          "level": 2,
+          "title": "Repository Map",
+          "line": 15
+        },
+        {
+          "level": 2,
+          "title": "Documentation Language",
+          "line": 28
+        },
+        {
+          "level": 2,
+          "title": "Open The Engine",
+          "line": 34
+        },
+        {
+          "level": 2,
+          "title": "First Working Contract",
+          "line": 50
+        },
+        {
+          "level": 2,
+          "title": "Research Notes",
+          "line": 62
+        }
+      ],
+      "linkedFrom": [
+        "guidance:root-readme"
+      ],
+      "memoryType": "overview",
+      "documentId": "root-readme"
+    },
+    {
+      "id": "adopting-framework",
+      "path": "docs/adopting-the-framework.md",
+      "title": "Adopting the Anyplan Framework in Your Project",
+      "category": "rule",
+      "contentType": "markdown",
+      "summary": "This guide explains how to take the portable Anyplan collaboration framework from clone to a project guidance instance that AI tools can follow. It covers Git setup, command-line scaffolding, optional scripts, prose documents, validation...",
+      "inclusionReason": "dashboard.completed:task-adoption-guide; guidance:adopting-framework",
+      "sections": [
+        {
+          "level": 1,
+          "title": "Adopting the Anyplan Framework in Your Project",
+          "line": 1
+        },
+        {
+          "level": 2,
+          "title": "What You Are Building",
+          "line": 7
+        },
+        {
+          "level": 2,
+          "title": "Choose an Integration Model",
+          "line": 19
+        },
+        {
+          "level": 3,
+          "title": "Model A — Submodule (recommended for active teams)",
+          "line": 21
+        },
+        {
+          "level": 3,
+          "title": "Model B — Sibling clone (quick trial)",
+          "line": 33
+        },
+        {
+          "level": 3,
+          "title": "Model C — Copy framework files (offline / fork)",
+          "line": 49
+        },
+        {
+          "level": 2,
+          "title": "Step 1 — Clone Anyplan",
+          "line": 53
+        },
+        {
+          "level": 2,
+          "title": "Step 2 — Scaffold a Guidance Instance",
+          "line": 62
+        },
+        {
+          "level": 2,
+          "title": "Step 3 — Validate the Instance",
+          "line": 98
+        },
+        {
+          "level": 1,
+          "title": "Option A: Node.js (ajv-cli via npx, no global install required)",
+          "line": 109
+        },
+        {
+          "level": 1,
+          "title": "Option B: Python jsonschema",
+          "line": 112
+        },
+        {
+          "level": 2,
+          "title": "Step 4 — Enrich Guidance (Manual or AI-Assisted)",
+          "line": 116
+        }
+      ],
+      "linkedFrom": [
+        "dashboard.completed:task-adoption-guide",
+        "guidance:adopting-framework"
+      ],
+      "memoryType": "methodology",
+      "documentId": "adopting-framework"
+    },
+    {
+      "id": "adr-0001",
+      "path": "docs/adr/0001-bootstrap-ai-collaboration-framework.md",
+      "title": "ADR 0001: Bootstrap AI Collaboration Framework",
+      "category": "rule",
+      "contentType": "markdown",
+      "summary": "Accepted",
+      "inclusionReason": "dashboard.completed:task-adr-bootstrap; guidance:adr-0001; path:docs/adr/",
+      "sections": [
+        {
+          "level": 1,
+          "title": "ADR 0001: Bootstrap AI Collaboration Framework",
+          "line": 1
+        },
+        {
+          "level": 2,
+          "title": "Status",
+          "line": 3
+        },
+        {
+          "level": 2,
+          "title": "Context",
+          "line": 7
+        },
+        {
+          "level": 2,
+          "title": "Decision",
+          "line": 17
+        },
+        {
+          "level": 2,
+          "title": "Consequences",
+          "line": 26
+        }
+      ],
+      "linkedFrom": [
+        "dashboard.completed:task-adr-bootstrap",
+        "guidance:adr-0001"
+      ],
+      "memoryType": "decision",
+      "documentId": "adr-0001"
+    },
+    {
+      "id": "adr-0002",
+      "path": "docs/adr/0002-english-docs-and-research-extraction.md",
+      "title": "ADR 0002: English Documentation and Research Extraction Boundary",
+      "category": "rule",
+      "contentType": "markdown",
+      "summary": "Accepted",
+      "inclusionReason": "dashboard.completed:task-english-research; guidance:adr-0002; path:docs/adr/",
+      "sections": [
+        {
+          "level": 1,
+          "title": "ADR 0002: English Documentation and Research Extraction Boundary",
+          "line": 1
+        },
+        {
+          "level": 2,
+          "title": "Status",
+          "line": 3
+        },
+        {
+          "level": 2,
+          "title": "Context",
+          "line": 7
+        },
+        {
+          "level": 2,
+          "title": "Decision",
+          "line": 16
+        },
+        {
+          "level": 2,
+          "title": "Consequences",
+          "line": 36
+        }
+      ],
+      "linkedFrom": [
+        "dashboard.completed:task-english-research",
+        "guidance:adr-0002"
+      ],
+      "memoryType": "decision",
+      "documentId": "adr-0002"
+    },
+    {
+      "id": "adr-0003",
+      "path": "docs/adr/0003-bounded-context-retrieval.md",
+      "title": "ADR 0003: Bounded Context Retrieval",
+      "category": "rule",
+      "contentType": "markdown",
+      "summary": "Accepted",
+      "inclusionReason": "dashboard.completed:task-bounded-retrieval; guidance:adr-0003; path:docs/adr/",
+      "sections": [
+        {
+          "level": 1,
+          "title": "ADR 0003: Bounded Context Retrieval",
+          "line": 1
+        },
+        {
+          "level": 2,
+          "title": "Status",
+          "line": 3
+        },
+        {
+          "level": 2,
+          "title": "Context",
+          "line": 7
+        },
+        {
+          "level": 2,
+          "title": "Decision",
+          "line": 13
+        },
+        {
+          "level": 2,
+          "title": "Consequences",
+          "line": 28
+        }
+      ],
+      "linkedFrom": [
+        "dashboard.completed:task-bounded-retrieval",
+        "guidance:adr-0003"
+      ],
+      "memoryType": "decision",
+      "documentId": "adr-0003"
+    },
+    {
+      "id": "collaboration-log",
+      "path": "docs/ai-collaboration-log.md",
+      "title": "AI Collaboration Log",
+      "category": "rule",
+      "contentType": "markdown",
+      "summary": "This document records how Anyplan uses its own AI collaboration framework while developing the framework.",
+      "inclusionReason": "filename:ai-collaboration-log.md; guidance:collaboration-log",
+      "sections": [
+        {
+          "level": 1,
+          "title": "AI Collaboration Log",
+          "line": 1
+        },
+        {
+          "level": 2,
+          "title": "2026-06-01 Bootstrap",
+          "line": 5
+        },
+        {
+          "level": 3,
+          "title": "TaskBrief",
+          "line": 7
+        },
+        {
+          "level": 3,
+          "title": "ContextSnapshot",
+          "line": 14
+        },
+        {
+          "level": 3,
+          "title": "Workflow Steps Used",
+          "line": 20
+        },
+        {
+          "level": 3,
+          "title": "ChangedArtifacts",
+          "line": 29
+        },
+        {
+          "level": 3,
+          "title": "Verification",
+          "line": 42
+        },
+        {
+          "level": 3,
+          "title": "OpenQuestions",
+          "line": 50
+        },
+        {
+          "level": 2,
+          "title": "2026-06-01 English Documentation and Case-Study Extraction",
+          "line": 56
+        },
+        {
+          "level": 3,
+          "title": "TaskBrief",
+          "line": 58
+        },
+        {
+          "level": 3,
+          "title": "ContextSnapshot",
+          "line": 65
+        },
+        {
+          "level": 3,
+          "title": "Extracted Anygine Patterns",
+          "line": 71
+        }
+      ],
+      "linkedFrom": [
+        "guidance:collaboration-log"
+      ],
+      "memoryType": "log",
+      "documentId": "collaboration-log"
+    },
+    {
+      "id": "research-index",
+      "path": "docs/research/README.md",
+      "title": "Research Notes",
+      "category": "rule",
+      "contentType": "markdown",
+      "summary": "This directory contains concrete project research, case studies, and extraction notes.",
+      "inclusionReason": "guidance:research-index; path:docs/research/",
+      "sections": [
+        {
+          "level": 1,
+          "title": "Research Notes",
+          "line": 1
+        },
+        {
+          "level": 2,
+          "title": "Current Research",
+          "line": 7
+        }
+      ],
+      "linkedFrom": [
+        "guidance:research-index"
+      ],
+      "memoryType": "overview",
+      "documentId": "research-index"
+    },
+    {
+      "id": "anygine-extraction-research",
+      "path": "docs/research/anygine-framework-extraction.md",
+      "title": "Anygine Framework Extraction Research Note",
+      "category": "rule",
+      "contentType": "markdown",
+      "summary": "This research note records how Anyplan analyzed a concrete project and extracted candidate guidance patterns.",
+      "inclusionReason": "guidance:anygine-extraction-research; path:docs/research/",
+      "sections": [
+        {
+          "level": 1,
+          "title": "Anygine Framework Extraction Research Note",
+          "line": 1
+        },
+        {
+          "level": 2,
+          "title": "Research Summary",
+          "line": 24
+        },
+        {
+          "level": 2,
+          "title": "Generalized Rules",
+          "line": 41
+        },
+        {
+          "level": 3,
+          "title": "1. Central Working Contract",
+          "line": 43
+        },
+        {
+          "level": 3,
+          "title": "2. Short Current-State Snapshot",
+          "line": 57
+        },
+        {
+          "level": 3,
+          "title": "3. Separate Memory Types",
+          "line": 71
+        },
+        {
+          "level": 3,
+          "title": "4. Bounded Context Retrieval",
+          "line": 90
+        },
+        {
+          "level": 3,
+          "title": "5. Vertical Slice Growth",
+          "line": 104
+        },
+        {
+          "level": 3,
+          "title": "6. Boundary Visibility",
+          "line": 120
+        },
+        {
+          "level": 3,
+          "title": "7. Dependency Ownership",
+          "line": 137
+        },
+        {
+          "level": 3,
+          "title": "8. Evidence Before Binding Decisions",
+          "line": 153
+        },
+        {
+          "level": 3,
+          "title": "9. Active Consistency Checks",
+          "line": 168
+        }
+      ],
+      "linkedFrom": [
+        "guidance:anygine-extraction-research"
+      ],
+      "memoryType": "evidence",
+      "documentId": "anygine-extraction-research"
+    },
+    {
+      "id": "framework-readme",
+      "path": "framework/README.md",
+      "title": "AI Collaboration Guidance Framework",
+      "category": "rule",
+      "contentType": "markdown",
+      "summary": "This framework turns implicit human-AI development habits into readable, inspectable, and project-instantiable guidance.",
+      "inclusionReason": "guidance:framework-readme",
+      "sections": [
+        {
+          "level": 1,
+          "title": "AI Collaboration Guidance Framework",
+          "line": 1
+        },
+        {
+          "level": 2,
+          "title": "Design Goals",
+          "line": 7
+        },
+        {
+          "level": 2,
+          "title": "Framework Layers",
+          "line": 15
+        },
+        {
+          "level": 2,
+          "title": "Instantiation Model",
+          "line": 44
+        },
+        {
+          "level": 2,
+          "title": "Compatibility Contract",
+          "line": 64
+        },
+        {
+          "level": 2,
+          "title": "Development Rule",
+          "line": 72
+        }
+      ],
+      "linkedFrom": [
+        "guidance:framework-readme"
+      ],
+      "memoryType": "rule",
+      "documentId": "framework-readme"
+    },
+    {
+      "id": "guidance-spec",
+      "path": "framework/spec/guidance-document.md",
+      "title": "AI Collaboration Guidance Document Specification",
+      "category": "rule",
+      "contentType": "markdown",
+      "summary": "This document defines the recommended structure for an AI collaboration guidance document.",
+      "inclusionReason": "guidance:guidance-spec",
+      "sections": [
+        {
+          "level": 1,
+          "title": "AI Collaboration Guidance Document Specification",
+          "line": 1
+        },
+        {
+          "level": 2,
+          "title": "1. Document Identity",
+          "line": 7
+        },
+        {
+          "level": 2,
+          "title": "2. Authority Model",
+          "line": 19
+        },
+        {
+          "level": 2,
+          "title": "3. Principles",
+          "line": 36
+        },
+        {
+          "level": 2,
+          "title": "4. Roles",
+          "line": 47
+        },
+        {
+          "level": 2,
+          "title": "5. Workflow",
+          "line": 59
+        },
+        {
+          "level": 2,
+          "title": "6. Knowledge Separation",
+          "line": 91
+        },
+        {
+          "level": 2,
+          "title": "7. Context Budget and Retrieval Depth",
+          "line": 106
+        },
+        {
+          "level": 2,
+          "title": "8. Constraints",
+          "line": 137
+        },
+        {
+          "level": 2,
+          "title": "9. Boundary Rules",
+          "line": 157
+        },
+        {
+          "level": 2,
+          "title": "10. Custom Description Interfaces",
+          "line": 173
+        },
+        {
+          "level": 2,
+          "title": "11. Visual Engine Integration",
+          "line": 196
+        }
+      ],
+      "linkedFrom": [
+        "guidance:guidance-spec"
+      ],
+      "memoryType": "rule",
+      "documentId": "guidance-spec"
+    },
+    {
+      "id": "project-state",
+      "path": "docs/ProjectState.md",
+      "title": "Project State",
+      "category": "state",
+      "contentType": "markdown",
+      "summary": "Short operational snapshot for AI context recovery. Structured dashboard data lives in instances/anyplan/dashboard.json.",
+      "inclusionReason": "frontmatter:anyplan.index",
+      "sections": [
+        {
+          "level": 1,
+          "title": "Project State",
+          "line": 2
+        },
+        {
+          "level": 2,
+          "title": "Active Phase",
+          "line": 6
+        },
+        {
+          "level": 2,
+          "title": "Current Priorities",
+          "line": 12
+        },
+        {
+          "level": 2,
+          "title": "Do Not Reopen Casually",
+          "line": 18
+        },
+        {
+          "level": 2,
+          "title": "Open Questions",
+          "line": 24
+        },
+        {
+          "level": 2,
+          "title": "Validation (Current Phase)",
+          "line": 29
+        },
+        {
+          "level": 1,
+          "title": "http://localhost:5173/engine/?instance=anyplan",
+          "line": 35
+        },
+        {
+          "level": 2,
+          "title": "Risks",
+          "line": 38
+        },
+        {
+          "level": 2,
+          "title": "Next Actions",
+          "line": 43
+        },
+        {
+          "level": 2,
+          "title": "Document Routing",
+          "line": 48
+        }
+      ],
+      "linkedFrom": [
+        "dashboard.overview",
+        "guidance:project-state"
+      ],
+      "memoryType": "state",
+      "documentId": "project-state"
+    }
+  ]
+}

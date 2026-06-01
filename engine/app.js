@@ -1,549 +1,575 @@
-const fallbackGuidance = {
-  schemaVersion: "0.1.0",
-  project: {
-    id: "anyplan",
-    name: "Anyplan",
-    purpose: "Develop a portable guidance framework for AI-assisted software development and a visual interaction engine for project guidance instances.",
-    documentationLanguage: "English",
-    context: "Embedded fallback guidance. When opened through an HTTP server, the engine loads instances/anyplan/guidance.json first.",
-    owners: ["fangzhou"]
-  },
-  principles: [
-    {
-      id: "english-documentation",
-      title: "English documentation",
-      statement: "Durable project documentation and guidance text should be written in English.",
-      rationale: "A single documentation language improves search, review, and reuse."
-    },
-    {
-      id: "portable-first",
-      title: "Portable framework first",
-      statement: "The framework body should remain independent of concrete project details.",
-      rationale: "Framework and instance separation allows multiple projects to use the same engine."
-    }
-  ],
-  roles: [
-    {
-      id: "human-owner",
-      name: "Human Project Owner",
-      responsibilities: ["Define research direction and acceptance criteria"],
-      permissions: ["Change project goals"],
-      handoffRules: ["High-impact decisions require human confirmation"]
-    },
-    {
-      id: "ai-coding-agent",
-      name: "AI Coding Agent",
-      responsibilities: ["Recover context", "Implement scoped changes", "Run validation"],
-      permissions: ["Edit repository files", "Run local non-destructive commands"],
-      handoffRules: ["Do not overwrite user changes"]
-    }
-  ],
-  workflows: [
-    {
-      id: "default-collaboration-loop",
-      name: "Default AI Collaboration Loop",
-      entrypoints: ["A human requests new work"],
-      steps: [
-        {
-          id: "capture-intent",
-          title: "Capture Intent",
-          purpose: "Turn a natural-language goal into an executable task boundary.",
-          actor: "human-owner, ai-coding-agent",
-          inputs: ["User request"],
-          actions: ["Identify goal, scope, and unknowns"],
-          outputs: ["TaskBrief"],
-          checks: ["The task has a deliverable"],
-          next: ["recover-context"]
-        },
-        {
-          id: "recover-context",
-          title: "Recover Context",
-          purpose: "Understand the current repository shape and durable guidance.",
-          actor: "ai-coding-agent",
-          inputs: ["TaskBrief"],
-          actions: ["Read relevant files"],
-          outputs: ["ContextSnapshot"],
-          checks: ["Existing user changes are preserved"],
-          next: ["plan-change"]
-        },
-        {
-          id: "plan-change",
-          title: "Plan Change",
-          purpose: "Break the goal into executable, verifiable steps.",
-          actor: "ai-coding-agent",
-          inputs: ["ContextSnapshot"],
-          actions: ["Choose an implementation path"],
-          outputs: ["Implementation plan"],
-          checks: ["The plan is small enough"],
-          next: ["implement-change"]
-        }
-      ],
-      exitCriteria: ["The requested artifact has been updated"]
-    }
-  ],
-  constraints: [
-    {
-      id: "protect-user-work",
-      category: "repository",
-      rule: "Do not revert or overwrite user changes that were not created in the current task.",
-      severity: "required",
-      appliesTo: ["ai-coding-agent"],
-      validation: "Check git status before edits."
-    }
-  ],
-  interfaces: [
-    {
-      id: "task-brief",
-      name: "TaskBrief",
-      purpose: "Convert a user request into an executable task object.",
-      producer: "human-owner or ai-coding-agent",
-      consumer: "ai-coding-agent",
-      fields: [
-        {
-          name: "intent",
-          type: "string",
-          required: true,
-          description: "The core outcome requested by the user."
-        }
-      ]
-    }
-  ],
-  documents: [
-    {
-      id: "framework-readme",
-      title: "AI Collaboration Guidance Framework",
-      path: "framework/README.md",
-      kind: "framework",
-      scope: "portable",
-      portable: true
-    }
-  ],
-  changeControl: {
-    versioning: "The 0.x stage allows fast evolution.",
-    proposalRequiredFor: ["Removing or renaming a top-level schema field"],
-    reviewChecklist: ["The change keeps the framework body independent of concrete projects"]
-  },
-  selfGovernance: {
-    activeWorkflow: "default-collaboration-loop",
-    recordPath: "docs/ai-collaboration-log.md",
-    minimumRecord: ["TaskBrief", "ContextSnapshot", "verification"]
-  }
-};
+/**
+ * Anyplan dashboard engine — guidance.json + dashboard.json + doc-index.json
+ */
+
+const SECTIONS = [
+  { id: "overview", label: "Project Overview" },
+  { id: "roadmap", label: "Macro Roadmap" },
+  { id: "completed", label: "Completed Tasks" },
+  { id: "current", label: "Current Phase Progress" }
+];
+
+const DEFAULT_INSTANCE = "anyplan";
 
 const state = {
-  guidance: structuredClone(fallbackGuidance),
-  selected: { type: "project", id: "anyplan" },
-  activeWorkflowId: "default-collaboration-loop",
-  query: "",
-  dirty: false
+  instanceId: DEFAULT_INSTANCE,
+  guidance: null,
+  dashboard: null,
+  docIndex: null,
+  indexByPath: new Map(),
+  filter: "",
+  openSections: new Set(SECTIONS.map((s) => s.id)),
+  selected: null,
+  showSource: false,
+  docCache: new Map()
 };
 
 const els = {
-  schemaVersion: document.querySelector("#schemaVersion"),
-  projectName: document.querySelector("#projectName"),
-  workflowTitle: document.querySelector("#workflowTitle"),
-  documentList: document.querySelector("#documentList"),
-  workflowList: document.querySelector("#workflowList"),
-  constraintList: document.querySelector("#constraintList"),
-  interfaceList: document.querySelector("#interfaceList"),
-  workflowGraph: document.querySelector("#workflowGraph"),
-  detailType: document.querySelector("#detailType"),
-  detailTitle: document.querySelector("#detailTitle"),
-  detailMeta: document.querySelector("#detailMeta"),
-  detailEditor: document.querySelector("#detailEditor"),
-  dirtyState: document.querySelector("#dirtyState"),
-  saveButton: document.querySelector("#saveButton"),
-  resetButton: document.querySelector("#resetButton"),
+  projectTitle: document.querySelector("#projectTitle"),
+  instanceSelect: document.querySelector("#instanceSelect"),
+  reloadButton: document.querySelector("#reloadButton"),
   statusLine: document.querySelector("#statusLine"),
-  exportButton: document.querySelector("#exportButton"),
-  importFile: document.querySelector("#importFile"),
-  searchInput: document.querySelector("#searchInput"),
-  addStepButton: document.querySelector("#addStepButton"),
-  moveUpButton: document.querySelector("#moveUpButton"),
-  moveDownButton: document.querySelector("#moveDownButton"),
-  deleteButton: document.querySelector("#deleteButton")
+  indexMeta: document.querySelector("#indexMeta"),
+  filterInput: document.querySelector("#filterInput"),
+  treeRoot: document.querySelector("#treeRoot"),
+  detailBreadcrumb: document.querySelector("#detailBreadcrumb"),
+  detailBadge: document.querySelector("#detailBadge"),
+  structuredDetail: document.querySelector("#structuredDetail"),
+  docSection: document.querySelector("#docSection"),
+  docPath: document.querySelector("#docPath"),
+  toggleSourceButton: document.querySelector("#toggleSourceButton"),
+  docContent: document.querySelector("#docContent")
 };
 
-async function init() {
+function getInstanceFromQuery() {
+  return new URLSearchParams(window.location.search).get("instance") || DEFAULT_INSTANCE;
+}
+
+async function fetchJson(path) {
+  const response = await fetch(path, { cache: "no-store" });
+  if (!response.ok) throw new Error(`${path} (${response.status})`);
+  return response.json();
+}
+
+function rebuildIndexMap() {
+  state.indexByPath = new Map();
+  if (!state.docIndex?.entries) return;
+  state.docIndex.entries.forEach((entry) => {
+    state.indexByPath.set(entry.path.replace(/\\/g, "/"), entry);
+  });
+}
+
+function getIndexEntry(path) {
+  if (!path) return null;
+  return state.indexByPath.get(path.replace(/\\/g, "/")) || null;
+}
+
+function isReadableMarkdown(path) {
+  if (!path || !path.toLowerCase().endsWith(".md")) return false;
+  return Boolean(getIndexEntry(path));
+}
+
+async function loadInstance(instanceId) {
+  const base = `../instances/${instanceId}`;
+  const guidance = await fetchJson(`${base}/guidance.json`);
+  let dashboard = null;
+  let docIndex = null;
+
   try {
-    const response = await fetch("../instances/anyplan/guidance.json", { cache: "no-store" });
-    if (response.ok) {
-      state.guidance = await response.json();
-      state.activeWorkflowId = state.guidance.selfGovernance?.activeWorkflow || state.guidance.workflows[0]?.id;
-      state.selected = { type: "workflow", id: state.activeWorkflowId };
-      setStatus("Loaded instances/anyplan/guidance.json");
-    }
+    dashboard = await fetchJson(`${base}/dashboard.json`);
   } catch {
-    setStatus("Using embedded guidance");
+    dashboard = synthesizeDashboard(guidance);
   }
 
-  bindEvents();
+  try {
+    docIndex = await fetchJson(`${base}/doc-index.json`);
+  } catch {
+    docIndex = null;
+  }
+
+  state.instanceId = instanceId;
+  state.guidance = guidance;
+  state.dashboard = dashboard;
+  state.docIndex = docIndex;
+  rebuildIndexMap();
+  state.docCache.clear();
+  state.showSource = false;
+  state.selected = { section: "overview", nodeId: "overview-root" };
+
+  els.projectTitle.textContent = guidance.project.name;
+
+  if (docIndex) {
+    setStatus(`Loaded ${base}/ · ${docIndex.entryCount} indexed documents`);
+  } else {
+    setStatus(
+      `Loaded ${base}/ · no doc-index.json — run: scripts/serve.sh ${instanceId}`,
+      true
+    );
+  }
+
   render();
 }
 
-function bindEvents() {
-  els.saveButton.addEventListener("click", applyEditor);
-  els.resetButton.addEventListener("click", renderInspector);
-  els.exportButton.addEventListener("click", exportGuidance);
-  els.importFile.addEventListener("change", importGuidance);
-  els.searchInput.addEventListener("input", (event) => {
-    state.query = event.target.value.trim().toLowerCase();
-    renderNavigation();
+function synthesizeDashboard(guidance) {
+  const p = guidance.project;
+  return {
+    schemaVersion: "0.1.0",
+    projectId: p.id,
+    overview: {
+      status: "bootstrap",
+      summary: p.context || p.purpose,
+      highlights: (guidance.principles || []).slice(0, 4).map((x) => x.title)
+    },
+    roadmap: {
+      summary: "Add dashboard.json per document-generation spec.",
+      phases: [
+        {
+          id: "phase-default",
+          title: "Default phase",
+          status: "active",
+          summary: p.context || ""
+        }
+      ]
+    },
+    completedTasks: [],
+    currentPhase: {
+      phaseId: "phase-default",
+      title: "Current work",
+      summary: "Define currentPhase.tasks in dashboard.json.",
+      tasks: []
+    }
+  };
+}
+
+function buildTreeModel() {
+  const d = state.dashboard;
+  const g = state.guidance;
+  const nodes = [];
+
+  nodes.push({
+    section: "overview",
+    id: "overview-root",
+    title: g.project.name,
+    summary: d.overview.summary,
+    status: d.overview.status,
+    payload: { type: "overview", data: d.overview, project: g.project },
+    documentPath: pickReadablePath(d.overview.documentPath, d.overview.documentId)
   });
-  els.addStepButton.addEventListener("click", addStep);
-  els.moveUpButton.addEventListener("click", () => moveStep(-1));
-  els.moveDownButton.addEventListener("click", () => moveStep(1));
-  els.deleteButton.addEventListener("click", deleteSelected);
-  els.detailEditor.addEventListener("input", () => setDirty(true));
+
+  d.roadmap.phases.forEach((phase) => {
+    nodes.push({
+      section: "roadmap",
+      id: `phase-${phase.id}`,
+      title: phase.title,
+      summary: phase.summary,
+      status: phase.status,
+      payload: { type: "phase", data: phase },
+      documentPath: pickReadablePath(phase.documentPath)
+    });
+    (phase.milestones || []).forEach((m) => {
+      nodes.push({
+        section: "roadmap",
+        id: `milestone-${phase.id}-${m.id}`,
+        title: m.title,
+        summary: m.summary,
+        status: m.status || "planned",
+        payload: { type: "milestone", data: m, phase },
+        documentPath: null,
+        parentId: `phase-${phase.id}`
+      });
+    });
+  });
+
+  d.completedTasks.forEach((task) => {
+    nodes.push({
+      section: "completed",
+      id: `done-${task.id}`,
+      title: task.title,
+      summary: task.summary,
+      status: "done",
+      meta: task.completedAt,
+      payload: { type: "completed", data: task },
+      documentPath: pickReadablePath(task.documentPath, task.documentId)
+    });
+  });
+
+  d.currentPhase.tasks.forEach((task) => {
+    nodes.push({
+      section: "current",
+      id: `current-${task.id}`,
+      title: task.title,
+      summary: task.summary,
+      status: task.status,
+      payload: { type: "current-task", data: task, phase: d.currentPhase },
+      documentPath: pickReadablePath(task.documentPath, task.documentId)
+    });
+  });
+
+  if (!d.currentPhase.tasks.length) {
+    nodes.push({
+      section: "current",
+      id: "current-phase-summary",
+      title: d.currentPhase.title,
+      summary: d.currentPhase.summary,
+      status: "active",
+      payload: { type: "current-phase", data: d.currentPhase },
+      documentPath: pickReadablePath(d.currentPhase.documentPath, d.currentPhase.documentId)
+    });
+  }
+
+  return nodes;
+}
+
+function pickReadablePath(path, documentId) {
+  if (path && isReadableMarkdown(path)) return path;
+  if (documentId && state.guidance?.documents) {
+    const doc = state.guidance.documents.find((d) => d.id === documentId);
+    if (doc?.path && isReadableMarkdown(doc.path)) return doc.path;
+  }
+  if (path && path.toLowerCase().endsWith(".md")) return null;
+  return null;
 }
 
 function render() {
-  els.schemaVersion.textContent = state.guidance.schemaVersion;
-  els.projectName.textContent = state.guidance.project.name;
-  const workflow = getActiveWorkflow();
-  els.workflowTitle.textContent = workflow?.name || "No workflow selected";
-  renderNavigation();
-  renderGraph();
-  renderInterfaces();
-  renderInspector();
-  updateActionState();
+  renderIndexMeta();
+  renderTree();
+  renderDetail();
 }
 
-function renderNavigation() {
-  renderItemList(els.documentList, state.guidance.documents, "document", (item) => item.title, (item) => item.path);
-  renderItemList(els.workflowList, state.guidance.workflows, "workflow", (item) => item.name, (item) => `${item.steps.length} stages`);
-  renderItemList(els.constraintList, state.guidance.constraints, "constraint", (item) => item.id, (item) => item.category);
-}
-
-function renderItemList(container, items, type, titleOf, metaOf) {
-  container.replaceChildren();
-  filtered(items).forEach((item) => {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = `navItem ${state.selected.type === type && state.selected.id === item.id ? "isActive" : ""}`;
-    button.innerHTML = `<strong></strong><span></span>`;
-    button.querySelector("strong").textContent = titleOf(item);
-    button.querySelector("span").textContent = metaOf(item);
-    button.addEventListener("click", () => selectItem(type, item.id));
-    container.append(button);
-  });
-}
-
-function filtered(items) {
-  if (!state.query) return items;
-  return items.filter((item) => JSON.stringify(item).toLowerCase().includes(state.query));
-}
-
-function selectItem(type, id) {
-  state.selected = { type, id };
-  if (type === "workflow") {
-    state.activeWorkflowId = id;
+function renderIndexMeta() {
+  if (!els.indexMeta) return;
+  if (!state.docIndex) {
+    els.indexMeta.textContent = "Index not built — use scripts/serve.sh";
+    return;
   }
-  if (type === "step") {
-    const workflow = state.guidance.workflows.find((item) => item.steps.some((step) => step.id === id));
-    state.activeWorkflowId = workflow?.id || state.activeWorkflowId;
-  }
-  render();
+  const at = state.docIndex.generatedAt?.slice(0, 19).replace("T", " ") || "";
+  els.indexMeta.textContent = `${state.docIndex.entryCount} docs indexed · ${at} UTC`;
 }
 
-function renderGraph() {
-  const workflow = getActiveWorkflow();
-  els.workflowGraph.replaceChildren();
-  if (!workflow) return;
+function renderTree() {
+  const nodes = buildTreeModel();
+  els.treeRoot.replaceChildren();
 
-  const width = Math.max(840, workflow.steps.length * 220 + 120);
-  const height = 520;
-  els.workflowGraph.setAttribute("viewBox", `0 0 ${width} ${height}`);
+  SECTIONS.forEach((section) => {
+    const sectionNodes = nodes.filter((n) => n.section === section.id && matchesFilter(n));
+    const topLevel = sectionNodes.filter((n) => !n.parentId);
 
-  const defs = svgEl("defs");
-  const marker = svgEl("marker", {
-    id: "arrow",
-    markerWidth: "10",
-    markerHeight: "10",
-    refX: "8",
-    refY: "3",
-    orient: "auto",
-    markerUnits: "strokeWidth"
-  });
-  marker.append(svgEl("path", { d: "M0,0 L0,6 L9,3 z", fill: "#9ca9a1" }));
-  defs.append(marker);
-  els.workflowGraph.append(defs);
+    const wrap = document.createElement("div");
+    wrap.className = `treeSection ${state.openSections.has(section.id) ? "isOpen" : ""}`;
 
-  const positions = workflow.steps.map((step, index) => ({
-    step,
-    x: 70 + index * 220,
-    y: index % 2 === 0 ? 150 : 260
-  }));
+    const head = document.createElement("button");
+    head.type = "button";
+    head.className = "treeSectionHead";
+    head.innerHTML = `<span class="chevron">${state.openSections.has(section.id) ? "▼" : "▶"}</span><span class="label"></span><span class="count"></span>`;
+    head.querySelector(".label").textContent = section.label;
+    head.querySelector(".count").textContent = String(sectionNodes.length);
+    head.addEventListener("click", () => {
+      if (state.openSections.has(section.id)) state.openSections.delete(section.id);
+      else state.openSections.add(section.id);
+      renderTree();
+    });
 
-  positions.forEach(({ step, x, y }, index) => {
-    step.next.forEach((nextId) => {
-      const target = positions.find((position) => position.step.id === nextId);
-      if (!target) return;
-      const path = svgEl("path", {
-        class: "edge",
-        d: `M${x + 170},${y + 52} C${x + 205},${y + 52} ${target.x - 35},${target.y + 52} ${target.x},${target.y + 52}`
+    const children = document.createElement("div");
+    children.className = "treeChildren";
+
+    const renderNode = (node, indent) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = `treeItem ${state.selected?.nodeId === node.id ? "isActive" : ""}`;
+      btn.style.paddingLeft = `${14 + indent * 12}px`;
+      btn.innerHTML = "<strong></strong><span></span>";
+      btn.querySelector("strong").textContent = node.title;
+      btn.querySelector("span").textContent = node.summary;
+      if (node.meta || node.status) {
+        const meta = document.createElement("span");
+        meta.className = "meta";
+        meta.textContent = node.meta || node.status;
+        btn.append(meta);
+      }
+      btn.addEventListener("click", () => {
+        state.selected = { section: node.section, nodeId: node.id };
+        state.showSource = false;
+        render();
       });
-      els.workflowGraph.append(path);
+      children.append(btn);
+    };
+
+    topLevel.forEach((node) => {
+      renderNode(node, 0);
+      sectionNodes.filter((n) => n.parentId === node.id).forEach((child) => renderNode(child, 1));
     });
 
-    if (!step.next.length && index < positions.length - 1) {
-      const target = positions[index + 1];
-      els.workflowGraph.append(svgEl("path", {
-        class: "edge",
-        d: `M${x + 170},${y + 52} C${x + 205},${y + 52} ${target.x - 35},${target.y + 52} ${target.x},${target.y + 52}`
-      }));
+    wrap.append(head, children);
+    els.treeRoot.append(wrap);
+  });
+}
+
+function matchesFilter(node) {
+  if (!state.filter) return true;
+  const hay = `${node.title} ${node.summary}`.toLowerCase();
+  return hay.includes(state.filter.toLowerCase());
+}
+
+function renderDetail() {
+  const nodes = buildTreeModel();
+  const node = nodes.find((n) => n.id === state.selected?.nodeId) || nodes[0];
+  if (!node) return;
+
+  const sectionLabel = SECTIONS.find((s) => s.id === node.section)?.label || "";
+  els.detailBreadcrumb.textContent = `${sectionLabel} / ${node.title}`;
+
+  const badgeStatus = node.status || node.payload?.data?.status;
+  els.detailBadge.textContent = badgeStatus || "";
+  els.detailBadge.className = badgeStatus ? `badge status-${badgeStatus}` : "badge";
+
+  els.structuredDetail.replaceChildren();
+  renderStructuredBlocks(node);
+
+  const docPath = node.documentPath || null;
+  const indexEntry = docPath ? getIndexEntry(docPath) : null;
+
+  if (indexEntry) {
+    appendIndexBlock(indexEntry);
+  }
+
+  els.docPath.textContent = docPath || "—";
+
+  if (docPath && indexEntry) {
+    els.toggleSourceButton.hidden = false;
+    els.toggleSourceButton.textContent = state.showSource ? "Hide markdown" : "Show markdown";
+    els.docSection.classList.toggle("isCollapsed", !state.showSource);
+    if (state.showSource) {
+      loadDocument(docPath);
+    } else {
+      els.docContent.innerHTML =
+        '<p class="placeholder">Indexed summary is shown above. Click <strong>Show markdown</strong> to load the full file.</p>';
     }
-  });
+  } else {
+    els.toggleSourceButton.hidden = true;
+    els.docSection.classList.add("isCollapsed");
+    const rawPath = resolveRawPath(node);
+    if (rawPath && rawPath.toLowerCase().endsWith(".json")) {
+      els.docContent.innerHTML =
+        '<p class="placeholder">This item references structured JSON (<code>' +
+        escapeHtml(rawPath) +
+        "</code>). Use the fields above — raw JSON is not shown in the dashboard reader.</p>";
+    } else if (rawPath) {
+      els.docContent.innerHTML =
+        '<p class="placeholder">No indexed markdown for this item. Run <code>scripts/build-doc-index.py</code> after adding markers or registering the file in guidance.json.</p>';
+    } else {
+      els.docContent.innerHTML =
+        '<p class="placeholder">No linked document. Structured dashboard fields are the source of truth for this item.</p>';
+    }
+  }
+}
 
-  positions.forEach(({ step, x, y }) => {
-    const group = svgEl("g", {
-      class: `node ${state.selected.type === "step" && state.selected.id === step.id ? "isActive" : ""}`,
-      tabindex: "0",
-      role: "button"
+function resolveRawPath(node) {
+  if (node.payload?.data?.documentPath) return node.payload.data.documentPath;
+  const docId = node.payload?.data?.documentId;
+  if (docId && state.guidance?.documents) {
+    return state.guidance.documents.find((d) => d.id === docId)?.path || null;
+  }
+  return null;
+}
+
+function appendIndexBlock(entry) {
+  const el = document.createElement("div");
+  el.className = "detailBlock indexBlock";
+  let html = `<h4>Indexed document</h4><p>${escapeHtml(entry.summary)}</p>`;
+  html += `<p class="indexMetaLine"><span>${escapeHtml(entry.category)}</span> · ${escapeHtml(entry.inclusionReason)}</p>`;
+  if (entry.sections?.length) {
+    html += "<h4>Sections</h4><ul>";
+    entry.sections.forEach((s) => {
+      html += `<li>${"·".repeat(s.level)} ${escapeHtml(s.title)}</li>`;
     });
-    group.append(svgEl("rect", { x, y, width: "170", height: "104" }));
-    const title = svgEl("text", { x: x + 14, y: y + 28, class: "nodeTitle" });
-    title.textContent = truncate(step.title, 12);
-    const actor = svgEl("text", { x: x + 14, y: y + 52, class: "nodeMeta" });
-    actor.textContent = truncate(step.actor, 18);
-    const output = svgEl("text", { x: x + 14, y: y + 76, class: "nodeMeta" });
-    output.textContent = truncate(step.outputs.join(", "), 18);
-    group.append(title, actor, output);
-    group.addEventListener("click", () => selectItem("step", step.id));
-    group.addEventListener("keydown", (event) => {
-      if (event.key === "Enter" || event.key === " ") selectItem("step", step.id);
-    });
-    els.workflowGraph.append(group);
-  });
+    html += "</ul>";
+  }
+  el.innerHTML = html;
+  els.structuredDetail.append(el);
 }
 
-function renderInterfaces() {
-  els.interfaceList.replaceChildren();
-  filtered(state.guidance.interfaces).forEach((item) => {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = `interfaceItem ${state.selected.type === "interface" && state.selected.id === item.id ? "isActive" : ""}`;
-    button.innerHTML = `<strong></strong><span></span>`;
-    button.querySelector("strong").textContent = item.name;
-    button.querySelector("span").textContent = `${item.fields.length} fields`;
-    button.addEventListener("click", () => selectItem("interface", item.id));
-    els.interfaceList.append(button);
-  });
+function renderStructuredBlocks(node) {
+  const { payload } = node;
+  const blocks = [];
+
+  if (payload.type === "overview") {
+    blocks.push(block("Purpose", payload.project.purpose));
+    blocks.push(block("Context", payload.project.context));
+    blocks.push(block("Summary", payload.data.summary));
+    blocks.push(listBlock("Highlights", payload.data.highlights));
+    blocks.push(listBlock("Owners", payload.data.owners || payload.project.owners));
+    if (state.docIndex) {
+      blocks.push(
+        block(
+          "Indexed documentation",
+          `${state.docIndex.entryCount} markdown files (run scripts/build-doc-index.py to refresh)`
+        )
+      );
+    }
+  }
+
+  if (payload.type === "phase") {
+    blocks.push(block("Summary", payload.data.summary));
+    blocks.push(block("Status", payload.data.status));
+    if (payload.data.milestones?.length) {
+      blocks.push(
+        listBlock(
+          "Milestones",
+          payload.data.milestones.map((m) => `${m.title} — ${m.summary}`)
+        )
+      );
+    }
+  }
+
+  if (payload.type === "milestone") {
+    blocks.push(block("Phase", payload.phase.title));
+    blocks.push(block("Summary", payload.data.summary));
+    if (payload.data.status) blocks.push(block("Status", payload.data.status));
+  }
+
+  if (payload.type === "completed") {
+    blocks.push(block("Completed", payload.data.completedAt));
+    blocks.push(block("Summary", payload.data.summary));
+    if (payload.data.details) blocks.push(block("Details", payload.data.details));
+  }
+
+  if (payload.type === "current-task") {
+    blocks.push(block("Status", payload.data.status));
+    blocks.push(block("Summary", payload.data.summary));
+    if (payload.data.details) blocks.push(block("Details", payload.data.details));
+    if (payload.data.blockers?.length) blocks.push(listBlock("Blockers", payload.data.blockers));
+  }
+
+  if (payload.type === "current-phase") {
+    blocks.push(block("Summary", payload.data.summary));
+    if (payload.data.progressPercent != null) {
+      const wrap = document.createElement("div");
+      wrap.className = "detailBlock";
+      wrap.innerHTML = `<h4>Progress</h4><p>${payload.data.progressPercent}%</p><div class="progressBar"><span style="width:${payload.data.progressPercent}%"></span></div>`;
+      blocks.push(wrap);
+    }
+  }
+
+  blocks.forEach((el) => els.structuredDetail.append(el));
 }
 
-function renderInspector() {
-  const target = getSelectedTarget();
-  els.detailType.textContent = labelForType(state.selected.type);
-  els.detailTitle.textContent = titleForTarget(target);
-  els.detailEditor.value = JSON.stringify(target, null, 2);
-  els.detailMeta.replaceChildren();
-
-  const meta = metaForTarget(target);
-  Object.entries(meta).forEach(([key, value]) => {
-    const dt = document.createElement("dt");
-    const dd = document.createElement("dd");
-    dt.textContent = key;
-    dd.textContent = String(value);
-    els.detailMeta.append(dt, dd);
-  });
+function block(title, text) {
+  const el = document.createElement("div");
+  el.className = "detailBlock";
+  el.innerHTML = "<h4></h4><p></p>";
+  el.querySelector("h4").textContent = title;
+  el.querySelector("p").textContent = text || "—";
+  return el;
 }
 
-function applyEditor() {
-  let parsed;
+function listBlock(title, items) {
+  const el = document.createElement("div");
+  el.className = "detailBlock";
+  const h = document.createElement("h4");
+  h.textContent = title;
+  el.append(h);
+  if (!items?.length) {
+    const p = document.createElement("p");
+    p.textContent = "—";
+    el.append(p);
+    return el;
+  }
+  const ul = document.createElement("ul");
+  items.forEach((item) => {
+    const li = document.createElement("li");
+    li.textContent = item;
+    ul.append(li);
+  });
+  el.append(ul);
+  return el;
+}
+
+async function loadDocument(path) {
+  if (state.docCache.has(path)) {
+    els.docContent.innerHTML = state.docCache.get(path);
+    return;
+  }
+  els.docContent.innerHTML = '<p class="placeholder">Loading…</p>';
   try {
-    parsed = JSON.parse(els.detailEditor.value);
+    const response = await fetch(`../${path}`, { cache: "no-store" });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const html = renderMarkdown(await response.text());
+    state.docCache.set(path, html);
+    els.docContent.innerHTML = html;
   } catch (error) {
-    setStatus(`JSON parse error: ${error.message}`, true);
-    return;
-  }
-
-  replaceSelectedTarget(parsed);
-  setDirty(true);
-  setStatus("Applied in memory");
-  render();
-}
-
-function replaceSelectedTarget(value) {
-  const { type, id } = state.selected;
-  if (type === "project") {
-    state.guidance.project = value;
-    return;
-  }
-  const collectionName = collectionForType(type);
-  if (collectionName) {
-    const collection = state.guidance[collectionName];
-    const index = collection.findIndex((item) => item.id === id);
-    if (index >= 0) {
-      collection[index] = value;
-      if (type === "workflow") state.activeWorkflowId = value.id;
-      state.selected.id = value.id;
-    }
-    return;
-  }
-  if (type === "step") {
-    const workflow = getActiveWorkflow();
-    const index = workflow.steps.findIndex((step) => step.id === id);
-    if (index >= 0) {
-      workflow.steps[index] = value;
-      state.selected.id = value.id;
-    }
+    els.docContent.innerHTML = `<p class="docError">${escapeHtml(path)}: ${escapeHtml(error.message)}</p>`;
   }
 }
 
-function addStep() {
-  const workflow = getActiveWorkflow();
-  if (!workflow) return;
-  const nextIndex = workflow.steps.length + 1;
-  const step = {
-    id: `new-step-${nextIndex}`,
-    title: `New Stage ${nextIndex}`,
-    purpose: "Define this stage's goal.",
-    actor: "ai-coding-agent",
-    inputs: [],
-    actions: [],
-    outputs: [],
-    checks: [],
-    next: []
+function escapeHtml(text) {
+  return String(text)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function renderMarkdown(source) {
+  const lines = source.replace(/\r\n/g, "\n").split("\n");
+  const out = [];
+  let inCode = false;
+  let codeBuf = [];
+  let listType = null;
+
+  const flushList = () => {
+    if (!listType) return;
+    out.push(listType === "ol" ? "</ol>" : "</ul>");
+    listType = null;
   };
-  const previous = workflow.steps.at(-1);
-  if (previous && !previous.next.includes(step.id)) {
-    previous.next = [step.id];
-  }
-  workflow.steps.push(step);
-  state.selected = { type: "step", id: step.id };
-  markChanged("Added workflow step");
-}
 
-function moveStep(direction) {
-  if (state.selected.type !== "step") return;
-  const workflow = getActiveWorkflow();
-  const index = workflow.steps.findIndex((step) => step.id === state.selected.id);
-  const nextIndex = index + direction;
-  if (index < 0 || nextIndex < 0 || nextIndex >= workflow.steps.length) return;
-  const [step] = workflow.steps.splice(index, 1);
-  workflow.steps.splice(nextIndex, 0, step);
-  markChanged("Moved workflow step");
-}
-
-function deleteSelected() {
-  const { type, id } = state.selected;
-  if (type === "step") {
-    const workflow = getActiveWorkflow();
-    workflow.steps = workflow.steps.filter((step) => step.id !== id);
-    workflow.steps.forEach((step) => {
-      step.next = step.next.filter((nextId) => nextId !== id);
-    });
-    state.selected = { type: "workflow", id: workflow.id };
-    markChanged("Deleted workflow step");
-    return;
-  }
-
-  const collectionName = collectionForType(type);
-  if (!collectionName) return;
-  state.guidance[collectionName] = state.guidance[collectionName].filter((item) => item.id !== id);
-  state.selected = { type: "project", id: state.guidance.project.id };
-  markChanged("Deleted selected item");
-}
-
-function markChanged(message) {
-  setDirty(true);
-  setStatus(message);
-  render();
-}
-
-function exportGuidance() {
-  const blob = new Blob([JSON.stringify(state.guidance, null, 2)], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = `${state.guidance.project.id || "guidance"}.guidance.json`;
-  link.click();
-  URL.revokeObjectURL(url);
-  setStatus("Exported JSON");
-}
-
-function importGuidance(event) {
-  const [file] = event.target.files;
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = () => {
-    try {
-      state.guidance = JSON.parse(String(reader.result));
-      state.activeWorkflowId = state.guidance.selfGovernance?.activeWorkflow || state.guidance.workflows[0]?.id;
-      state.selected = { type: "workflow", id: state.activeWorkflowId };
-      setDirty(true);
-      setStatus(`Imported ${file.name}`);
-      render();
-    } catch (error) {
-      setStatus(`Import failed: ${error.message}`, true);
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    if (line.startsWith("```")) {
+      flushList();
+      if (!inCode) {
+        inCode = true;
+        codeBuf = [];
+      } else {
+        inCode = false;
+        out.push(`<pre><code>${escapeHtml(codeBuf.join("\n"))}</code></pre>`);
+      }
+      continue;
     }
-  };
-  reader.readAsText(file);
-}
-
-function getSelectedTarget() {
-  const { type, id } = state.selected;
-  if (type === "project") return state.guidance.project;
-  if (type === "step") {
-    return getActiveWorkflow()?.steps.find((step) => step.id === id) || {};
+    if (inCode) {
+      codeBuf.push(line);
+      continue;
+    }
+    if (/^#{1,3}\s/.test(line)) {
+      flushList();
+      const level = line.match(/^#+/)[0].length;
+      out.push(`<h${level}>${inlineFormat(line.replace(/^#+\s*/, ""))}</h${level}>`);
+      continue;
+    }
+    if (/^[-*]\s+/.test(line)) {
+      if (listType !== "ul") {
+        flushList();
+        listType = "ul";
+        out.push("<ul>");
+      }
+      out.push(`<li>${inlineFormat(line.replace(/^[-*]\s+/, ""))}</li>`);
+      continue;
+    }
+    if (!line.trim()) {
+      flushList();
+      continue;
+    }
+    flushList();
+    out.push(`<p>${inlineFormat(line)}</p>`);
   }
-  const collectionName = collectionForType(type);
-  if (!collectionName) return {};
-  return state.guidance[collectionName].find((item) => item.id === id) || {};
+  flushList();
+  return out.join("\n");
 }
 
-function getActiveWorkflow() {
-  return state.guidance.workflows.find((workflow) => workflow.id === state.activeWorkflowId) || state.guidance.workflows[0];
-}
-
-function collectionForType(type) {
-  return {
-    document: "documents",
-    workflow: "workflows",
-    constraint: "constraints",
-    interface: "interfaces"
-  }[type];
-}
-
-function titleForTarget(target) {
-  return target.name || target.title || target.id || state.guidance.project.name;
-}
-
-function labelForType(type) {
-  return {
-    project: "Project",
-    document: "Document",
-    workflow: "Workflow",
-    step: "Stage",
-    constraint: "Constraint",
-    interface: "Interface"
-  }[type] || "Object";
-}
-
-function metaForTarget(target) {
-  if (!target || !Object.keys(target).length) return {};
-  const meta = {};
-  ["id", "name", "title", "kind", "scope", "category", "severity", "actor"].forEach((key) => {
-    if (target[key] !== undefined) meta[key] = target[key];
-  });
-  if (target.steps) meta.steps = target.steps.length;
-  if (target.fields) meta.fields = target.fields.length;
-  return meta;
-}
-
-function updateActionState() {
-  const isStep = state.selected.type === "step";
-  const isWorkflow = state.selected.type === "workflow";
-  els.addStepButton.disabled = !getActiveWorkflow();
-  els.moveUpButton.disabled = !isStep;
-  els.moveDownButton.disabled = !isStep;
-  els.deleteButton.disabled = !(isStep || ["document", "constraint", "interface"].includes(state.selected.type)) || isWorkflow;
-}
-
-function setDirty(isDirty) {
-  state.dirty = isDirty;
-  els.dirtyState.textContent = isDirty ? "Not exported" : "Synced";
-  els.dirtyState.classList.toggle("isDirty", isDirty);
+function inlineFormat(text) {
+  return escapeHtml(text)
+    .replace(/`([^`]+)`/g, "<code>$1</code>")
+    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
 }
 
 function setStatus(message, isError = false) {
@@ -551,15 +577,47 @@ function setStatus(message, isError = false) {
   els.statusLine.classList.toggle("isError", isError);
 }
 
-function svgEl(name, attrs = {}) {
-  const element = document.createElementNS("http://www.w3.org/2000/svg", name);
-  Object.entries(attrs).forEach(([key, value]) => element.setAttribute(key, value));
-  return element;
+function bindEvents() {
+  els.filterInput.addEventListener("input", (e) => {
+    state.filter = e.target.value.trim();
+    renderTree();
+  });
+
+  els.reloadButton.addEventListener("click", () => {
+    state.docCache.clear();
+    loadInstance(state.instanceId).catch((err) => setStatus(err.message, true));
+  });
+
+  els.instanceSelect.addEventListener("change", (e) => {
+    const id = e.target.value;
+    const url = new URL(window.location.href);
+    url.searchParams.set("instance", id);
+    window.history.replaceState({}, "", url);
+    loadInstance(id).catch((err) => setStatus(err.message, true));
+  });
+
+  els.toggleSourceButton.addEventListener("click", () => {
+    state.showSource = !state.showSource;
+    renderDetail();
+  });
 }
 
-function truncate(value, maxLength) {
-  const text = String(value || "");
-  return text.length > maxLength ? `${text.slice(0, maxLength - 1)}…` : text;
+async function init() {
+  bindEvents();
+  const instanceId = getInstanceFromQuery();
+  els.instanceSelect.replaceChildren();
+  for (const id of [instanceId, DEFAULT_INSTANCE].filter((v, i, a) => a.indexOf(v) === i)) {
+    const opt = document.createElement("option");
+    opt.value = id;
+    opt.textContent = id;
+    opt.selected = id === instanceId;
+    els.instanceSelect.append(opt);
+  }
+  try {
+    await loadInstance(instanceId);
+  } catch (error) {
+    setStatus(`Load failed: ${error.message}. Run scripts/serve.sh ${instanceId}`, true);
+  }
 }
 
 init();
