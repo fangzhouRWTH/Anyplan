@@ -1,0 +1,623 @@
+{
+  "schemaVersion": "0.1.0",
+  "project": {
+    "id": "anyplan",
+    "name": "Anyplan",
+    "purpose": "Develop a portable guidance framework for AI-assisted software development and a visual interaction engine for browsing, editing, and adjusting instantiated project guidance.",
+    "documentationLanguage": "English",
+    "context": "The project is in its bootstrap stage. The current priority is to define a portable framework, instantiate it for Anyplan, derive generalized rules from the sibling Anygine project, and keep the visual engine aligned with the structured guidance contract.",
+    "owners": ["fangzhou"]
+  },
+  "principles": [
+    {
+      "id": "english-documentation",
+      "title": "English documentation",
+      "statement": "Durable project documentation, guidance instances, ADRs, logs, framework specifications, and documentation-facing UI text should be written in English.",
+      "rationale": "A single documentation language keeps project memory searchable, reviewable, and reusable across future AI sessions and project instances."
+    },
+    {
+      "id": "portable-first",
+      "title": "Portable framework first",
+      "statement": "The framework body must stay independent of Anyplan and Anygine implementation details; project-specific rules belong in project instances.",
+      "rationale": "Separating framework and instance allows the visual engine and guidance model to support many projects."
+    },
+    {
+      "id": "anygine-derived-generalization",
+      "title": "Anygine-derived generalization",
+      "statement": "Framework rules should abstract the collaboration and governance patterns proven in Anygine without copying graphics-engine-specific details into the portable body.",
+      "rationale": "Anygine provides a concrete, working example, while Anyplan must remain usable by projects in other domains."
+    },
+    {
+      "id": "structured-before-visual",
+      "title": "Structure before visualization",
+      "statement": "The visual engine should read structured guidance data rather than infer workflows from prose documents.",
+      "rationale": "A stable data contract is easier to validate, version, and connect to tooling."
+    },
+    {
+      "id": "central-contract",
+      "title": "Central working contract",
+      "statement": "Each project instance should identify a central guidance artifact that outranks descriptive documents when future work needs durable rules.",
+      "rationale": "Anygine shows that AI collaboration works better when rules, authority, and conflicts are anchored in one contract."
+    },
+    {
+      "id": "separate-memory-types",
+      "title": "Separate memory types",
+      "statement": "Rules, current state, decisions, evidence, roadmap state, development history, and methodology should be represented as distinct document types or records.",
+      "rationale": "Separating memory types helps AI and humans recover the right source of truth without rereading the whole archive."
+    },
+    {
+      "id": "vertical-slice-growth",
+      "title": "Vertical slice growth",
+      "statement": "Projects should prefer small runnable slices that validate architecture before large speculative frameworks.",
+      "rationale": "Anygine's roadmap demonstrates that implementation pressure is the best test of module boundaries and workflow assumptions."
+    },
+    {
+      "id": "self-application",
+      "title": "Self application",
+      "statement": "Anyplan development must record task intent, workflow stages, validation results, changed guidance, and open questions.",
+      "rationale": "The framework should expose its own gaps through practical use."
+    }
+  ],
+  "roles": [
+    {
+      "id": "human-owner",
+      "name": "Human Project Owner",
+      "responsibilities": [
+        "Define research direction, product intent, and acceptance criteria",
+        "Decide whether core framework concepts are valid",
+        "Approve high-impact changes to framework authority, schema, or project direction"
+      ],
+      "permissions": [
+        "Change project goals",
+        "Accept, reject, or redirect AI proposals",
+        "Revise any guidance document"
+      ],
+      "handoffRules": [
+        "AI may implement a scoped minimum version when ambiguity is low-risk",
+        "Human confirmation is required when a change redefines framework authority, schema semantics, or core project direction"
+      ]
+    },
+    {
+      "id": "ai-coding-agent",
+      "name": "AI Coding Agent",
+      "responsibilities": [
+        "Recover project context from the guidance map and repository state",
+        "Maintain framework documents, schema, project instances, and the visual engine",
+        "Check new requests against durable guidance",
+        "Implement scoped code and documentation changes",
+        "Run available validation and report residual risk"
+      ],
+      "permissions": [
+        "Create and edit repository files",
+        "Run local non-destructive commands",
+        "Propose workflow, constraint, interface, and document-map changes"
+      ],
+      "handoffRules": [
+        "Do not overwrite user changes",
+        "Surface material conflicts before executing contradictory work",
+        "Return to the human owner for destructive operations or non-inferable product decisions"
+      ]
+    },
+    {
+      "id": "visual-editor",
+      "name": "Visual Interaction Engine",
+      "responsibilities": [
+        "Display documents, workflows, constraints, and interfaces",
+        "Allow users to edit project instance guidance",
+        "Export guidance JSON or future guidance patches"
+      ],
+      "permissions": [
+        "Read project instance guidance",
+        "Create updated JSON after user interaction"
+      ],
+      "handoffRules": [
+        "Framework-body changes should become explicit proposals rather than silent writes",
+        "Exported JSON should be checked by schema validation or human review"
+      ]
+    }
+  ],
+  "workflows": [
+    {
+      "id": "default-collaboration-loop",
+      "name": "Default AI Collaboration Loop",
+      "entrypoints": [
+        "A human asks for implementation, review, research, or documentation work",
+        "AI detects a gap in the framework, project instance, or visual engine",
+        "The visual engine exports a proposed workflow or guidance adjustment"
+      ],
+      "steps": [
+        {
+          "id": "capture-intent",
+          "title": "Capture Intent",
+          "purpose": "Turn a natural-language request into an executable task boundary.",
+          "actor": "human-owner, ai-coding-agent",
+          "inputs": ["User request", "Current guidance"],
+          "actions": [
+            "Identify goal, scope, acceptance clues, and unknowns",
+            "Make reasonable assumptions only when risk is low"
+          ],
+          "outputs": ["TaskBrief"],
+          "checks": [
+            "The task has a deliverable",
+            "High-impact choices are flagged for human confirmation"
+          ],
+          "next": ["recover-context"]
+        },
+        {
+          "id": "recover-context",
+          "title": "Recover Context",
+          "purpose": "Read the smallest authoritative context needed to act safely.",
+          "actor": "ai-coding-agent",
+          "inputs": ["TaskBrief", "Guidance document map", "Repository state"],
+          "actions": [
+            "Read central guidance, current state, relevant documents, and current files",
+            "Identify existing user changes and relevant source-of-truth documents",
+            "Summarize the current structure and risks"
+          ],
+          "outputs": ["ContextSnapshot"],
+          "checks": [
+            "Existing user work is preserved",
+            "The selected context is sufficient for the task"
+          ],
+          "next": ["check-guidance"]
+        },
+        {
+          "id": "check-guidance",
+          "title": "Check Guidance",
+          "purpose": "Compare the request against durable project rules and source-of-truth documents.",
+          "actor": "ai-coding-agent",
+          "inputs": ["TaskBrief", "ContextSnapshot", "Principles", "Constraints"],
+          "actions": [
+            "Identify conflicts with language policy, authority, schema, workflow, or project boundaries",
+            "Raise conflicts or propose document updates when direction intentionally changes"
+          ],
+          "outputs": ["GuidanceConflict or clearance to proceed"],
+          "checks": [
+            "Material conflicts are not ignored",
+            "Intentional direction changes are recorded in the appropriate document"
+          ],
+          "next": ["plan-change"]
+        },
+        {
+          "id": "plan-change",
+          "title": "Plan Change",
+          "purpose": "Convert the task into scoped, verifiable implementation steps.",
+          "actor": "ai-coding-agent",
+          "inputs": ["TaskBrief", "ContextSnapshot", "GuidanceConflict"],
+          "actions": [
+            "Choose a small implementation path",
+            "Identify the validation strategy",
+            "Update the task plan when the work is substantial"
+          ],
+          "outputs": ["Implementation plan or WorkflowPatch"],
+          "checks": [
+            "The plan is proportionate to the task",
+            "The plan preserves framework and instance boundaries"
+          ],
+          "next": ["implement-change"]
+        },
+        {
+          "id": "implement-change",
+          "title": "Implement Change",
+          "purpose": "Complete the smallest useful change.",
+          "actor": "ai-coding-agent",
+          "inputs": ["Implementation plan", "Repository files"],
+          "actions": [
+            "Edit documents, schema, project instances, or engine code",
+            "Keep domain-specific rules in instances and general rules in the framework",
+            "Avoid unrelated refactors"
+          ],
+          "outputs": ["Code or documentation diff"],
+          "checks": [
+            "Changes stay within scope",
+            "The structured data contract remains valid"
+          ],
+          "next": ["verify-change"]
+        },
+        {
+          "id": "verify-change",
+          "title": "Verify Change",
+          "purpose": "Check that the change is valid, useful, and human-reproducible.",
+          "actor": "ai-coding-agent",
+          "inputs": ["Code or documentation diff"],
+          "actions": [
+            "Run JSON, schema, syntax, or runtime checks as available",
+            "Inspect documentation language and cross-links",
+            "Report what was and was not verified"
+          ],
+          "outputs": ["VerificationReport"],
+          "checks": [
+            "Validation covers the main risk",
+            "Residual risk is stated clearly"
+          ],
+          "next": ["record-decision"]
+        },
+        {
+          "id": "record-decision",
+          "title": "Record Decision",
+          "purpose": "Preserve useful project memory without unnecessary ceremony.",
+          "actor": "ai-coding-agent, human-owner",
+          "inputs": ["VerificationReport", "Final diff"],
+          "actions": [
+            "Update the smallest authoritative document set",
+            "Create or update ADRs when guidance or architecture changes",
+            "Record open questions and next useful actions"
+          ],
+          "outputs": ["Collaboration record", "Final summary"],
+          "checks": [
+            "Completed work and remaining risk are clear",
+            "Future sessions can recover the reason for durable changes"
+          ],
+          "next": []
+        }
+      ],
+      "exitCriteria": [
+        "The requested artifact has been changed or the blocker has been explained",
+        "Available validation has been run",
+        "Durable guidance changes are recorded in the appropriate document"
+      ]
+    }
+  ],
+  "constraints": [
+    {
+      "id": "english-only-docs",
+      "category": "documentation",
+      "rule": "Durable project documentation and guidance text must be written in English.",
+      "severity": "required",
+      "appliesTo": ["human-owner", "ai-coding-agent", "visual-editor"],
+      "validation": "Search project documentation and guidance files for non-English durable prose before completion."
+    },
+    {
+      "id": "protect-user-work",
+      "category": "repository",
+      "rule": "Do not revert or overwrite user changes that were not created in the current task.",
+      "severity": "required",
+      "appliesTo": ["ai-coding-agent"],
+      "validation": "Check git status before and after edits; work with existing changes instead of reverting them."
+    },
+    {
+      "id": "schema-is-contract",
+      "category": "quality",
+      "rule": "The visual engine and project instances must treat the schema and guidance JSON as the structured contract.",
+      "severity": "required",
+      "appliesTo": ["visual-editor", "ai-coding-agent"],
+      "validation": "Guidance JSON must parse and validate against the schema whenever schema validation is available."
+    },
+    {
+      "id": "framework-instance-boundary",
+      "category": "documentation",
+      "rule": "Portable rules belong in the framework; project-specific rules belong in project instances.",
+      "severity": "required",
+      "appliesTo": ["ai-coding-agent", "visual-editor"],
+      "validation": "Framework documents should describe abstract rules; instances should bind them to concrete project choices."
+    },
+    {
+      "id": "anygine-derived-not-anygine-bound",
+      "category": "documentation",
+      "rule": "Rules derived from Anygine must be expressed as generalized collaboration, boundary, validation, or documentation patterns.",
+      "severity": "required",
+      "appliesTo": ["ai-coding-agent"],
+      "validation": "Framework text should explain how Anygine can instantiate the rule without making every project inherit Vulkan, C++, CMake, or Conan."
+    },
+    {
+      "id": "central-contract-required",
+      "category": "quality",
+      "rule": "Each serious project instance should identify a central guidance artifact and a document authority model.",
+      "severity": "recommended",
+      "appliesTo": ["human-owner", "ai-coding-agent"],
+      "validation": "The document map should identify the primary contract, decision records, current state, evidence, roadmap, and logs when they exist."
+    },
+    {
+      "id": "separate-evidence-decisions",
+      "category": "documentation",
+      "rule": "Technical evidence and binding decisions should be recorded separately.",
+      "severity": "recommended",
+      "appliesTo": ["ai-coding-agent"],
+      "validation": "Research reports may recommend actions, but durable decisions should appear in a decision log or ADR."
+    },
+    {
+      "id": "vertical-slice-before-framework",
+      "category": "quality",
+      "rule": "Prefer a small runnable or inspectable slice before expanding a large abstraction.",
+      "severity": "recommended",
+      "appliesTo": ["ai-coding-agent", "human-owner"],
+      "validation": "Plans should define the smallest useful verification path before broad architecture expansion."
+    },
+    {
+      "id": "human-reproducible-validation",
+      "category": "communication",
+      "rule": "Completion summaries should include validation that the project owner can reproduce when relevant.",
+      "severity": "recommended",
+      "appliesTo": ["ai-coding-agent"],
+      "validation": "Final reports should include commands, expected results, and unverified items for meaningful changes."
+    },
+    {
+      "id": "no-silent-framework-change",
+      "category": "interaction",
+      "rule": "The visual engine may edit project instances; framework-body changes require explicit change records.",
+      "severity": "required",
+      "appliesTo": ["visual-editor", "ai-coding-agent"],
+      "validation": "Changes under framework/ should update the collaboration log and should add an ADR when they alter durable direction."
+    }
+  ],
+  "interfaces": [
+    {
+      "id": "task-brief",
+      "name": "TaskBrief",
+      "purpose": "Convert a user request into an executable task object.",
+      "producer": "human-owner or ai-coding-agent",
+      "consumer": "ai-coding-agent",
+      "fields": [
+        {
+          "name": "intent",
+          "type": "string",
+          "required": true,
+          "description": "The core outcome requested by the user."
+        },
+        {
+          "name": "scope",
+          "type": "string[]",
+          "required": true,
+          "description": "Files, modules, concepts, or documents allowed in the task."
+        },
+        {
+          "name": "acceptance",
+          "type": "string[]",
+          "required": false,
+          "description": "Signals that the task is complete."
+        },
+        {
+          "name": "unknowns",
+          "type": "string[]",
+          "required": false,
+          "description": "Questions that remain uncertain but can be recorded or clarified."
+        }
+      ]
+    },
+    {
+      "id": "context-snapshot",
+      "name": "ContextSnapshot",
+      "purpose": "Record the project context recovered by the AI collaborator.",
+      "producer": "ai-coding-agent",
+      "consumer": "human-owner, ai-coding-agent",
+      "fields": [
+        {
+          "name": "filesRead",
+          "type": "string[]",
+          "required": true,
+          "description": "Important files read during the task."
+        },
+        {
+          "name": "currentStructure",
+          "type": "string",
+          "required": true,
+          "description": "Summary of the current repository or guidance structure."
+        },
+        {
+          "name": "risks",
+          "type": "string[]",
+          "required": false,
+          "description": "Risks that may affect implementation or validation."
+        }
+      ]
+    },
+    {
+      "id": "guidance-conflict",
+      "name": "GuidanceConflict",
+      "purpose": "Represent a possible conflict between a new request and existing durable guidance.",
+      "producer": "ai-coding-agent",
+      "consumer": "human-owner, ai-coding-agent",
+      "fields": [
+        {
+          "name": "request",
+          "type": "string",
+          "required": true,
+          "description": "The request or change that may conflict with existing guidance."
+        },
+        {
+          "name": "conflictingGuidance",
+          "type": "string[]",
+          "required": true,
+          "description": "Guidance documents, principles, or constraints that appear to conflict."
+        },
+        {
+          "name": "recommendedAction",
+          "type": "clarify | update-guidance | proceed | stop",
+          "required": true,
+          "description": "Recommended next step."
+        }
+      ]
+    },
+    {
+      "id": "workflow-patch",
+      "name": "WorkflowPatch",
+      "purpose": "Describe an adjustment to workflow nodes, order, or checks.",
+      "producer": "visual-editor or ai-coding-agent",
+      "consumer": "human-owner, ai-coding-agent",
+      "fields": [
+        {
+          "name": "targetWorkflow",
+          "type": "string",
+          "required": true,
+          "description": "Workflow id being modified."
+        },
+        {
+          "name": "operation",
+          "type": "add | update | remove | reorder",
+          "required": true,
+          "description": "Patch operation."
+        },
+        {
+          "name": "rationale",
+          "type": "string",
+          "required": true,
+          "description": "Reason for the change."
+        }
+      ]
+    },
+    {
+      "id": "guidance-change",
+      "name": "GuidanceChange",
+      "purpose": "Describe a proposed change to framework or project guidance.",
+      "producer": "human-owner, ai-coding-agent, or visual-editor",
+      "consumer": "human-owner, ai-coding-agent",
+      "fields": [
+        {
+          "name": "changeClass",
+          "type": "instanceChange | frameworkChange | engineChange",
+          "required": true,
+          "description": "Scope of the proposed guidance change."
+        },
+        {
+          "name": "affectedDocuments",
+          "type": "string[]",
+          "required": true,
+          "description": "Documents or structured files affected by the change."
+        },
+        {
+          "name": "migrationNotes",
+          "type": "string",
+          "required": false,
+          "description": "Migration guidance when existing instances or tools are affected."
+        }
+      ]
+    },
+    {
+      "id": "verification-report",
+      "name": "VerificationReport",
+      "purpose": "Record validation commands, results, and residual risk.",
+      "producer": "ai-coding-agent",
+      "consumer": "human-owner",
+      "fields": [
+        {
+          "name": "checks",
+          "type": "object[]",
+          "required": true,
+          "description": "Each validation command or method and its result."
+        },
+        {
+          "name": "humanReproduction",
+          "type": "string[]",
+          "required": false,
+          "description": "Steps the project owner can run independently."
+        },
+        {
+          "name": "residualRisk",
+          "type": "string[]",
+          "required": false,
+          "description": "Risks not covered by validation."
+        }
+      ]
+    }
+  ],
+  "documents": [
+    {
+      "id": "root-readme",
+      "title": "Anyplan README",
+      "path": "README.md",
+      "kind": "framework",
+      "scope": "project",
+      "portable": false
+    },
+    {
+      "id": "framework-readme",
+      "title": "AI Collaboration Guidance Framework",
+      "path": "framework/README.md",
+      "kind": "framework",
+      "scope": "portable",
+      "portable": true
+    },
+    {
+      "id": "guidance-spec",
+      "title": "AI Collaboration Guidance Document Specification",
+      "path": "framework/spec/guidance-document.md",
+      "kind": "spec",
+      "scope": "portable",
+      "portable": true
+    },
+    {
+      "id": "anygine-derived-framework",
+      "title": "Anygine-Derived General Guidance Framework",
+      "path": "framework/spec/anygine-derived-framework.md",
+      "kind": "spec",
+      "scope": "portable",
+      "portable": true
+    },
+    {
+      "id": "guidance-schema",
+      "title": "Anyplan Guidance JSON Schema",
+      "path": "framework/schema/anyplan-guidance.schema.json",
+      "kind": "schema",
+      "scope": "portable",
+      "portable": true
+    },
+    {
+      "id": "anyplan-instance",
+      "title": "Anyplan Project Guidance Instance",
+      "path": "instances/anyplan/guidance.json",
+      "kind": "instance",
+      "scope": "project",
+      "portable": false
+    },
+    {
+      "id": "visual-engine",
+      "title": "Visual Interaction Engine MVP",
+      "path": "engine/index.html",
+      "kind": "engine",
+      "scope": "tooling",
+      "portable": false
+    },
+    {
+      "id": "adr-0001",
+      "title": "ADR 0001: Bootstrap AI Collaboration Framework",
+      "path": "docs/adr/0001-bootstrap-ai-collaboration-framework.md",
+      "kind": "adr",
+      "scope": "project",
+      "portable": false
+    },
+    {
+      "id": "adr-0002",
+      "title": "ADR 0002: English Docs and Anygine-Derived Framework",
+      "path": "docs/adr/0002-english-docs-and-anygine-derived-framework.md",
+      "kind": "adr",
+      "scope": "project",
+      "portable": false
+    },
+    {
+      "id": "collaboration-log",
+      "title": "AI Collaboration Log",
+      "path": "docs/ai-collaboration-log.md",
+      "kind": "log",
+      "scope": "project",
+      "portable": false
+    }
+  ],
+  "changeControl": {
+    "versioning": "During the 0.x stage, the schema may evolve quickly. Removing a field or changing field semantics requires a minor version bump and migration notes.",
+    "proposalRequiredFor": [
+      "Removing or renaming a top-level schema field",
+      "Changing the meaning of the default workflow stages",
+      "Letting the visual engine write directly to portable framework documents",
+      "Introducing runtime dependencies that require external services or authentication",
+      "Changing the project documentation language"
+    ],
+    "reviewChecklist": [
+      "Does the change keep the framework independent of concrete project details?",
+      "Does the Anyplan instance need a synchronized update?",
+      "Can the visual engine read or safely ignore the new field?",
+      "Does the change preserve the Anygine-derived abstraction without hard-coding Anygine domain rules?",
+      "Does the collaboration log or ADR record the motivation, validation, and residual risk?"
+    ]
+  },
+  "selfGovernance": {
+    "activeWorkflow": "default-collaboration-loop",
+    "recordPath": "docs/ai-collaboration-log.md",
+    "minimumRecord": [
+      "TaskBrief",
+      "ContextSnapshot",
+      "changedArtifacts",
+      "verification",
+      "openQuestions"
+    ]
+  }
+}

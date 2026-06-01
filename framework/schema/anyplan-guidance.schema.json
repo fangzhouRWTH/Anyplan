@@ -1,0 +1,375 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://anygine.org/anyplan/schemas/anyplan-guidance.schema.json",
+  "title": "Anyplan AI Collaboration Guidance",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "project",
+    "principles",
+    "roles",
+    "workflows",
+    "constraints",
+    "interfaces",
+    "documents",
+    "changeControl",
+    "selfGovernance"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "pattern": "^0\\.[0-9]+\\.[0-9]+$"
+    },
+    "project": {
+      "$ref": "#/$defs/project"
+    },
+    "principles": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/principle"
+      }
+    },
+    "roles": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/role"
+      }
+    },
+    "workflows": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/workflow"
+      }
+    },
+    "constraints": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/constraint"
+      }
+    },
+    "interfaces": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/interface"
+      }
+    },
+    "documents": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/document"
+      }
+    },
+    "changeControl": {
+      "$ref": "#/$defs/changeControl"
+    },
+    "selfGovernance": {
+      "$ref": "#/$defs/selfGovernance"
+    }
+  },
+  "$defs": {
+    "project": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "purpose", "documentationLanguage", "context", "owners"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 1
+        },
+        "documentationLanguage": {
+          "type": "string",
+          "minLength": 1
+        },
+        "context": {
+          "type": "string",
+          "minLength": 1
+        },
+        "owners": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "principle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "statement", "rationale"],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "statement": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "role": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "responsibilities", "permissions", "handoffRules"],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "responsibilities": {
+          "$ref": "#/$defs/stringList"
+        },
+        "permissions": {
+          "$ref": "#/$defs/stringList"
+        },
+        "handoffRules": {
+          "$ref": "#/$defs/stringList"
+        }
+      }
+    },
+    "workflow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "entrypoints", "steps", "exitCriteria"],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "entrypoints": {
+          "$ref": "#/$defs/stringList"
+        },
+        "steps": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/workflowStep"
+          }
+        },
+        "exitCriteria": {
+          "$ref": "#/$defs/stringList"
+        }
+      }
+    },
+    "workflowStep": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "purpose", "actor", "inputs", "actions", "outputs", "checks", "next"],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 1
+        },
+        "actor": {
+          "type": "string",
+          "minLength": 1
+        },
+        "inputs": {
+          "$ref": "#/$defs/stringList"
+        },
+        "actions": {
+          "$ref": "#/$defs/stringList"
+        },
+        "outputs": {
+          "$ref": "#/$defs/stringList"
+        },
+        "checks": {
+          "$ref": "#/$defs/stringList"
+        },
+        "next": {
+          "$ref": "#/$defs/stringList"
+        }
+      }
+    },
+    "constraint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "category", "rule", "severity", "appliesTo", "validation"],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "category": {
+          "enum": ["repository", "quality", "communication", "safety", "documentation", "interaction"]
+        },
+        "rule": {
+          "type": "string",
+          "minLength": 1
+        },
+        "severity": {
+          "enum": ["required", "recommended", "experimental"]
+        },
+        "appliesTo": {
+          "$ref": "#/$defs/stringList"
+        },
+        "validation": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "interface": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "purpose", "producer", "consumer", "fields"],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 1
+        },
+        "producer": {
+          "type": "string",
+          "minLength": 1
+        },
+        "consumer": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fields": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/interfaceField"
+          }
+        }
+      }
+    },
+    "interfaceField": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "type", "required", "description"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "document": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "path", "kind", "scope", "portable"],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "enum": ["framework", "spec", "schema", "instance", "engine", "adr", "log"]
+        },
+        "scope": {
+          "enum": ["portable", "project", "tooling"]
+        },
+        "portable": {
+          "type": "boolean"
+        }
+      }
+    },
+    "changeControl": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["versioning", "proposalRequiredFor", "reviewChecklist"],
+      "properties": {
+        "versioning": {
+          "type": "string",
+          "minLength": 1
+        },
+        "proposalRequiredFor": {
+          "$ref": "#/$defs/stringList"
+        },
+        "reviewChecklist": {
+          "$ref": "#/$defs/stringList"
+        }
+      }
+    },
+    "selfGovernance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["activeWorkflow", "recordPath", "minimumRecord"],
+      "properties": {
+        "activeWorkflow": {
+          "$ref": "#/$defs/id"
+        },
+        "recordPath": {
+          "type": "string",
+          "minLength": 1
+        },
+        "minimumRecord": {
+          "$ref": "#/$defs/stringList"
+        }
+      }
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$"
+    },
+    "stringList": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  }
+}
