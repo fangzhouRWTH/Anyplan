@@ -1,6 +1,8 @@
-# Anygine-Derived General Guidance Framework
+# Anygine Framework Extraction Research Note
 
-This document records how Anyplan abstracts reusable guidance rules from the Anygine project.
+This research note records how Anyplan analyzed a concrete project and extracted candidate guidance patterns.
+
+This document is not part of the portable framework specification. It is a project-specific research artifact. Framework documents may reuse lessons from this note only after restating them in project-independent terms.
 
 The source material is the sibling project at `/home/fangzhou/projects/Anygine/Anygine`, especially:
 
@@ -19,7 +21,7 @@ The source material is the sibling project at `/home/fangzhou/projects/Anygine/A
 
 The goal is not to copy Anygine's graphics-engine rules into every project. The goal is to extract the collaboration and governance pattern behind those rules.
 
-## Extraction Summary
+## Research Summary
 
 Anygine is a concrete Vulkan/C++ graphics engine. Its project documents contain domain-specific commitments such as Vulkan visibility, static-library-first CMake targets, Conan dependency management, public/private headers, and simulation-training goals.
 

@@ -1,4 +1,4 @@
-# ADR 0002: English Documentation and Anygine-Derived Framework
+# ADR 0002: English Documentation and Research Extraction Boundary
 
 ## Status
 
@@ -46,4 +46,4 @@ Costs:
 
 - Existing Anyplan documents and guidance strings must be translated to English.
 - The schema must track documentation language.
-- Future framework changes must keep the Anygine-derived rules abstract enough for other project domains.
+- Future framework changes must keep case-study-derived rules abstract enough for other project domains.

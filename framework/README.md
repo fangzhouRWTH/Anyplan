@@ -38,23 +38,6 @@ It is intentionally independent of a specific repository, language, build system
 8. **Instance Layer**
    Maps the framework into a concrete project through a `guidance.json` file and related project documents.
 
-## Anygine-Derived Abstraction
-
-The initial framework extraction comes from Anygine, a Vulkan graphics engine project that already uses AI-assisted development documentation.
-
-The Anygine project contributes several reusable patterns:
-
-- Use a central working contract as the highest-level durable rule document.
-- Keep a short current-state snapshot for fast context recovery.
-- Separate rules, current assumptions, decisions, evidence, roadmap state, chronological logs, and methodology.
-- Prefer runnable vertical slices before large speculative subsystem design.
-- Preserve important technical boundaries instead of hiding ownership, lifetime, dependencies, or platform assumptions.
-- Require dependency ownership and public/private API rules.
-- Treat AI as an engineering collaborator that must validate, critique, and record meaningful work.
-- Provide validation instructions that the project owner can reproduce outside the AI conversation.
-
-Anyplan generalizes those patterns into a domain-independent guidance framework. A project such as Anygine can instantiate the framework by binding the abstract rules to concrete choices such as Vulkan visibility, C++20, CMake targets, Conan dependency policy, public/private headers, shader tooling, and simulation-oriented roadmap phases.
-
 ## Instantiation Model
 
 A project instance should include:
@@ -85,6 +68,6 @@ New fields should be added so older tools can safely ignore them when possible. 
 
 Any framework change should answer three questions:
 
-- Does it remain independent of Anyplan and Anygine?
+- Does it remain independent of Anyplan and any other concrete project instance?
 - Can a concrete project instantiate it without copying domain-specific rules into the framework body?
 - Can the visual engine read, display, edit, or safely ignore the change?

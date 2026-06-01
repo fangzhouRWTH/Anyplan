@@ -5,7 +5,7 @@
     "name": "Anyplan",
     "purpose": "Develop a portable guidance framework for AI-assisted software development and a visual interaction engine for browsing, editing, and adjusting instantiated project guidance.",
     "documentationLanguage": "English",
-    "context": "The project is in its bootstrap stage. The current priority is to define a portable framework, instantiate it for Anyplan, derive generalized rules from the sibling Anygine project, and keep the visual engine aligned with the structured guidance contract.",
+    "context": "The project is in its bootstrap stage. The current priority is to define a portable framework, instantiate it for Anyplan, keep concrete project research separate from framework definitions, and keep the visual engine aligned with the structured guidance contract.",
     "owners": ["fangzhou"]
   },
   "principles": [
@@ -18,14 +18,8 @@
     {
       "id": "portable-first",
       "title": "Portable framework first",
-      "statement": "The framework body must stay independent of Anyplan and Anygine implementation details; project-specific rules belong in project instances.",
+      "statement": "The framework body must stay independent of Anyplan and any other concrete project implementation details; project-specific rules belong in project instances or research notes.",
       "rationale": "Separating framework and instance allows the visual engine and guidance model to support many projects."
-    },
-    {
-      "id": "anygine-derived-generalization",
-      "title": "Anygine-derived generalization",
-      "statement": "Framework rules should abstract the collaboration and governance patterns proven in Anygine without copying graphics-engine-specific details into the portable body.",
-      "rationale": "Anygine provides a concrete, working example, while Anyplan must remain usable by projects in other domains."
     },
     {
       "id": "structured-before-visual",
@@ -37,7 +31,7 @@
       "id": "central-contract",
       "title": "Central working contract",
       "statement": "Each project instance should identify a central guidance artifact that outranks descriptive documents when future work needs durable rules.",
-      "rationale": "Anygine shows that AI collaboration works better when rules, authority, and conflicts are anchored in one contract."
+      "rationale": "AI collaboration works better when rules, authority, and conflicts are anchored in a clear source of truth."
     },
     {
       "id": "separate-memory-types",
@@ -49,7 +43,7 @@
       "id": "vertical-slice-growth",
       "title": "Vertical slice growth",
       "statement": "Projects should prefer small runnable slices that validate architecture before large speculative frameworks.",
-      "rationale": "Anygine's roadmap demonstrates that implementation pressure is the best test of module boundaries and workflow assumptions."
+      "rationale": "Implementation pressure is often the best test of module boundaries and workflow assumptions."
     },
     {
       "id": "self-application",
@@ -292,12 +286,12 @@
       "validation": "Framework documents should describe abstract rules; instances should bind them to concrete project choices."
     },
     {
-      "id": "anygine-derived-not-anygine-bound",
+      "id": "research-is-not-framework",
       "category": "documentation",
-      "rule": "Rules derived from Anygine must be expressed as generalized collaboration, boundary, validation, or documentation patterns.",
+      "rule": "Concrete project research must not be presented as part of the portable framework definition until it is restated in project-independent terms.",
       "severity": "required",
       "appliesTo": ["ai-coding-agent"],
-      "validation": "Framework text should explain how Anygine can instantiate the rule without making every project inherit Vulkan, C++, CMake, or Conan."
+      "validation": "Framework overviews and specifications should avoid indexing or depending on concrete project case studies."
     },
     {
       "id": "central-contract-required",
@@ -536,12 +530,20 @@
       "portable": true
     },
     {
-      "id": "anygine-derived-framework",
-      "title": "Anygine-Derived General Guidance Framework",
-      "path": "framework/spec/anygine-derived-framework.md",
-      "kind": "spec",
-      "scope": "portable",
-      "portable": true
+      "id": "research-index",
+      "title": "Research Notes",
+      "path": "docs/research/README.md",
+      "kind": "research",
+      "scope": "project",
+      "portable": false
+    },
+    {
+      "id": "anygine-extraction-research",
+      "title": "Anygine Framework Extraction Research Note",
+      "path": "docs/research/anygine-framework-extraction.md",
+      "kind": "research",
+      "scope": "project",
+      "portable": false
     },
     {
       "id": "guidance-schema",
@@ -577,8 +579,8 @@
     },
     {
       "id": "adr-0002",
-      "title": "ADR 0002: English Docs and Anygine-Derived Framework",
-      "path": "docs/adr/0002-english-docs-and-anygine-derived-framework.md",
+      "title": "ADR 0002: English Docs and Research Extraction Boundary",
+      "path": "docs/adr/0002-english-docs-and-research-extraction.md",
       "kind": "adr",
       "scope": "project",
       "portable": false
@@ -605,7 +607,7 @@
       "Does the change keep the framework independent of concrete project details?",
       "Does the Anyplan instance need a synchronized update?",
       "Can the visual engine read or safely ignore the new field?",
-      "Does the change preserve the Anygine-derived abstraction without hard-coding Anygine domain rules?",
+      "Does the change keep concrete project research separate from portable framework definitions?",
       "Does the collaboration log or ADR record the motivation, validation, and residual risk?"
     ]
   },

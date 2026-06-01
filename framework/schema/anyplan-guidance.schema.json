@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://anygine.org/anyplan/schemas/anyplan-guidance.schema.json",
+  "$id": "https://anyplan.dev/schemas/anyplan-guidance.schema.json",
   "title": "Anyplan AI Collaboration Guidance",
   "type": "object",
   "additionalProperties": false,
@@ -316,7 +316,7 @@
           "minLength": 1
         },
         "kind": {
-          "enum": ["framework", "spec", "schema", "instance", "engine", "adr", "log"]
+          "enum": ["framework", "spec", "schema", "instance", "engine", "adr", "log", "research"]
         },
         "scope": {
           "enum": ["portable", "project", "tooling"]

@@ -12,13 +12,12 @@ The repository has three responsibilities:
 
 - [framework/README.md](framework/README.md): overview of the portable AI collaboration framework.
 - [framework/spec/guidance-document.md](framework/spec/guidance-document.md): guidance document specification.
-- [framework/spec/anygine-derived-framework.md](framework/spec/anygine-derived-framework.md): generalized framework rules derived from the Anygine project documentation.
 - [framework/schema/anyplan-guidance.schema.json](framework/schema/anyplan-guidance.schema.json): machine-readable schema for guidance instances.
 - [instances/anyplan/guidance.json](instances/anyplan/guidance.json): Anyplan's own instantiated guidance document.
 - [engine/index.html](engine/index.html): static visual interaction engine MVP.
+- [docs/research/README.md](docs/research/README.md): concrete project research notes and extraction studies.
+- [docs/adr/README.md](docs/adr/README.md): architecture and project decision records.
 - [docs/ai-collaboration-log.md](docs/ai-collaboration-log.md): self-governance record for this project.
-- [docs/adr/0001-bootstrap-ai-collaboration-framework.md](docs/adr/0001-bootstrap-ai-collaboration-framework.md): initial architecture decision.
-- [docs/adr/0002-english-docs-and-anygine-derived-framework.md](docs/adr/0002-english-docs-and-anygine-derived-framework.md): documentation-language and framework-derivation decision.
 
 ## Documentation Language
 
@@ -48,17 +47,8 @@ Anyplan treats AI-assisted development as a describable, inspectable, and adjust
 - Custom description interfaces for task briefs, context snapshots, workflow patches, guidance changes, and verification reports.
 - Change-control rules for framework, instance, and engine updates.
 
-## Anygine-Derived Direction
+## Research Notes
 
-The first framework extraction is based on the sibling Anygine project at `/home/fangzhou/projects/Anygine/Anygine`.
+Concrete project research, extraction notes, and case studies belong under `docs/research/`.
 
-Anygine's documentation shows a mature AI-assisted development pattern:
-
-- A central working contract has higher authority than descriptive documents.
-- Current project state is kept short for fast context recovery.
-- Decisions, evidence, roadmap state, development history, and methodology are separated.
-- Work grows through runnable vertical slices rather than broad speculative architecture.
-- Public/private boundaries, dependency ownership, and validation instructions are documented.
-- AI collaborators are expected to check conflicts, provide candid engineering critique, and leave useful verification evidence.
-
-Anyplan generalizes those practices so projects outside graphics-engine development can instantiate the same collaboration model with their own domain-specific rules.
+Research documents may inform the framework, but they are not part of the portable framework definition. When a research finding becomes a general rule, the framework should restate it in project-independent terms.

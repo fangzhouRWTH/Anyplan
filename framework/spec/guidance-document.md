@@ -101,7 +101,7 @@ A guidance framework should distinguish different types of project memory:
 - **Methodology**: reusable collaboration patterns, anti-patterns, and lessons.
 - **Overview documents**: human-facing navigation and project introduction.
 
-This separation is derived from Anygine's documentation structure, but it is domain-independent.
+This separation keeps retrieval efficient by giving each type of knowledge a clear source of truth.
 
 ## 7. Constraints
 
@@ -137,7 +137,7 @@ Reusable boundary types include:
 - Application, tool, test, and core-library boundaries.
 - Domain-specific implementation boundaries.
 
-Anygine's concrete examples include CMake targets, public/private headers, Vulkan backend visibility, and Conan-owned dependencies. A non-graphics project can instantiate the same abstract rule with its own modules, package boundaries, API contracts, or service ownership model.
+A project can instantiate this abstract rule through modules, package boundaries, API contracts, service ownership, generated-code boundaries, deployment units, or tool/runtime separation.
 
 ## 9. Custom Description Interfaces
 

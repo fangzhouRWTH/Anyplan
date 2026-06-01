@@ -53,7 +53,7 @@ This document records how Anyplan uses its own AI collaboration framework while 
 - Should guidance documents support multilingual presentation while keeping durable records in English?
 - Should workflow adjustments export patches instead of complete JSON?
 
-## 2026-06-01 English Documentation and Anygine-Derived Framework
+## 2026-06-01 English Documentation and Case-Study Extraction
 
 ### TaskBrief
 
@@ -86,13 +86,14 @@ This document records how Anyplan uses its own AI collaboration framework while 
 - `README.md`
 - `framework/README.md`
 - `framework/spec/guidance-document.md`
-- `framework/spec/anygine-derived-framework.md`
+- `docs/research/anygine-framework-extraction.md`
 - `framework/schema/anyplan-guidance.schema.json`
 - `instances/anyplan/guidance.json`
 - `engine/index.html`
 - `engine/app.js`
 - `docs/ai-collaboration-log.md`
-- `docs/adr/0002-english-docs-and-anygine-derived-framework.md`
+- `docs/adr/0002-english-docs-and-research-extraction.md`
+- `docs/research/README.md`
 
 ### Verification
 
@@ -108,3 +109,44 @@ This document records how Anyplan uses its own AI collaboration framework while 
 - Should project instances define a formal authority graph instead of only a document map?
 - Should the schema support first-class document authority and memory-type fields?
 - Should the visual engine generate `GuidanceChange` and `WorkflowPatch` objects instead of exporting full guidance JSON?
+
+## 2026-06-01 Separate Framework Definition from Concrete Research
+
+### TaskBrief
+
+- `intent`: Remove concrete project case-study content from framework overviews and specifications, keeping the portable framework independent and abstract.
+- `scope`: Root README, framework overview, guidance specification, schema, Anyplan guidance instance, research documents, ADR index, and collaboration log.
+- `acceptance`: Framework definitions no longer depend on or index a concrete project; concrete project analysis lives under `docs/research/`.
+- `unknowns`: Whether future research notes should use a richer metadata schema.
+
+### ContextSnapshot
+
+- `filesRead`: Root README, framework overview, guidance specification, schema, Anyplan instance guidance, research extraction note, and collaboration log.
+- `currentStructure`: Concrete project extraction content had been stored under `framework/spec/`, which made it look normative.
+- `risks`: Keeping case-study content in framework definitions could make the framework appear dependent on one project.
+
+### ChangedArtifacts
+
+- `README.md`
+- `framework/README.md`
+- `framework/spec/guidance-document.md`
+- `framework/schema/anyplan-guidance.schema.json`
+- `instances/anyplan/guidance.json`
+- `docs/research/README.md`
+- `docs/research/anygine-framework-extraction.md`
+- `docs/adr/README.md`
+- `docs/ai-collaboration-log.md`
+
+### Verification
+
+- `python3 -m json.tool framework/schema/anyplan-guidance.schema.json`: passed.
+- `python3 -m json.tool instances/anyplan/guidance.json`: passed.
+- `python3 -c "import json, jsonschema; ..."`: Anyplan instance passed Draft 2020-12 schema validation.
+- `node --check engine/app.js`: passed.
+- `rg -n "Anygine|anygine|Vulkan|CMake|Conan" README.md framework`: no matches, confirming framework overview/specification files no longer depend on or index the concrete case study.
+- `python3 -m http.server 5173` plus `curl -I`: `/engine/` and `/instances/anyplan/guidance.json` both returned 200.
+
+### OpenQuestions
+
+- Should research notes have a first-class schema separate from project guidance?
+- Should the visual engine display research documents in a separate lane from framework and instance documents?
