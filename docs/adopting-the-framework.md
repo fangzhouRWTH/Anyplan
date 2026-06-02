@@ -198,6 +198,24 @@ Format: [framework/spec/document-generation.md](../framework/spec/document-gener
 
 Keep `dashboard.json` in sync with `docs/ProjectState.md` when phase or task status changes.
 
+### 6c — AI Entry (zero-context onboarding)
+
+Scaffold with `--with-docs` (creates `docs/AI-Entry.md` from [framework/templates/AI-Entry.md](../framework/templates/AI-Entry.md)) or copy manually.
+
+Customize **path bindings and optional packs only**—do not paste domain rules into AI-Entry. See [framework/spec/ai-entry.md](../framework/spec/ai-entry.md).
+
+Register in `guidance.json` → `documents` with `defaultRead: always`.
+
+Owner invocation for new AI sessions:
+
+```text
+Follow docs/AI-Entry.md, then: <task>
+```
+
+### 6d — Feeding experience back to Anyplan
+
+When this project discovers reusable collaboration patterns, follow [framework/spec/instance-extraction-feedback.md](../framework/spec/instance-extraction-feedback.md) and prompt [scripts/prompts/extract-instance-feedback.md](../scripts/prompts/extract-instance-feedback.md).
+
 ## Step 7 — Document Index and Visual Engine
 
 Build a filtered markdown index (only files that match markers, paths, or guidance/dashboard links):

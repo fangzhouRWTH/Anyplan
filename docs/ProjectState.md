@@ -49,10 +49,12 @@ python3 -m http.server 5173
 
 | Need | Read first |
 | --- | --- |
+| Zero-context AI onboarding | `docs/AI-Entry.md` |
 | Central rules | `instances/anyplan/guidance.json` |
 | Overview / roadmap / tasks | `instances/anyplan/dashboard.json` |
 | Fast state | This file |
 | Binding decisions | `docs/adr/` |
 | Work history | `docs/ai-collaboration-log.md` |
+| Extract from case studies | `framework/spec/instance-extraction-feedback.md` |
 
 Last updated: 2026-06-01

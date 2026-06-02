@@ -15,6 +15,8 @@ See **[docs/adopting-the-framework.md](docs/adopting-the-framework.md)** for a s
 ## Repository Map
 
 - [docs/adopting-the-framework.md](docs/adopting-the-framework.md): how to apply Anyplan in your own repository.
+- [docs/AI-Entry.md](docs/AI-Entry.md): zero-context AI onboarding (meta strategy for this repo).
+- [framework/spec/ai-entry.md](framework/spec/ai-entry.md): portable AI-Entry specification for all instances.
 - [framework/README.md](framework/README.md): overview of the portable AI collaboration framework.
 - [framework/spec/guidance-document.md](framework/spec/guidance-document.md): guidance document specification.
 - [framework/spec/document-generation.md](framework/spec/document-generation.md): dashboard and engine document contract.

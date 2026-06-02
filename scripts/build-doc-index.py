@@ -37,6 +37,7 @@ FILENAME_RULES: list[tuple[re.Pattern[str], str, str]] = [
     (re.compile(r"ProjectState\.md$", re.I), "state", "filename:ProjectState.md"),
     (re.compile(r"WorkingContract\.md$", re.I), "rule", "filename:WorkingContract.md"),
     (re.compile(r"ai-collaboration-log\.md$", re.I), "log", "filename:ai-collaboration-log.md"),
+    (re.compile(r"AI-Entry\.md$", re.I), "task-scope", "filename:AI-Entry.md"),
     (re.compile(r"Roadmap", re.I), "roadmap", "filename:Roadmap"),
 ]
 

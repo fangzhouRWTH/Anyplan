@@ -222,6 +222,47 @@ Generic application:
 
 - The framework should preserve useful memory without turning every task into documentation ceremony.
 
+### 13. AI Entry (Zero-Context Onboarding)
+
+Abstract rule:
+
+- Each project should expose one meta-strategy onboarding document for AI with no prior context. It defines read order, depth, skips, and expansion triggers—not domain rules.
+
+Anygine instance (after Anyplan ADR 0004 backport):
+
+- `Doc/AI-Entry.md` lists memory types and Anygine path bindings.
+- `Doc/GuidanceManifest.md` default startup path references AI-Entry after WorkingContract.
+- Owner may say: “Follow `Doc/AI-Entry.md`” without repeating project background.
+
+Generic application:
+
+- `docs/AI-Entry.md` per instance; portable spec in `framework/spec/ai-entry.md`.
+
+### 14. Active Defect Handoff (Debug Context Packs)
+
+Abstract rule:
+
+- Optional short-lived bug report files for stuck defects or owner-requested handoff—not every fix. Active directory while open; archive when confirmed; sparse volume.
+
+Anygine instance:
+
+- `Doc/ActiveBugReports/`, `Doc/BugReportArchive/`, policy in README and WorkingContract.
+- Wired in GuidanceManifest tiers and expansion trigger for open index.
+
+Generic application:
+
+- `framework/spec/active-bug-reports.md`; enable via AI-Entry optional pack.
+
+### 15. Instance Extraction Feedback Loop
+
+Abstract rule:
+
+- Concrete projects feed lessons back through research notes + restated portable specs, not by copying domain rules into the framework.
+
+Anyplan process:
+
+- `framework/spec/instance-extraction-feedback.md`, `scripts/prompts/extract-instance-feedback.md`, ADR 0004.
+
 ## Required Project Instance Mapping
 
 A project that instantiates this framework should map the abstract rules to concrete artifacts:
@@ -238,6 +279,9 @@ A project that instantiates this framework should map the abstract rules to conc
 | AI behavior | Conflict checks, critique expectations, handoff rules |
 | Validation | Commands, tests, visible behavior, human-side instructions |
 | Documentation language | Durable documentation language and exceptions |
+| AI zero-context entry | `docs/AI-Entry.md` |
+| Defect handoff (optional) | `docs/active-bug-reports/`, archive, manifest routing |
+| Extraction feedback | Research note + framework spec update process |
 
 ## How Anygine Can Use This Framework
 
@@ -249,5 +293,7 @@ Anygine can instantiate Anyplan by binding the generalized rules to its existing
 - `constraints`: public/private API boundaries, Conan-first dependency policy, static-library-first targets, diagnostics usage, project-relative paths, validation-layer policy.
 - `workflows`: phase-task workflow from contract check through implementation, validation, roadmap update, and decision logging.
 - `interfaces`: task brief, context snapshot, retrieval scope, dependency proposal, boundary change, verification report, roadmap update, and decision entry.
+- `AI-Entry`: `Doc/AI-Entry.md` for zero-context onboarding (backported 2026-06).
+- `ActiveBugReports`: already in Anygine; portable rules in Anyplan `framework/spec/active-bug-reports.md`.
 
 This keeps Anygine concrete while letting the Anyplan framework remain portable.

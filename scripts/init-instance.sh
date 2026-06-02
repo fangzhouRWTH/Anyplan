@@ -201,6 +201,14 @@ if [[ "$WITH_DOCS" -eq 1 ]]; then
     render_template "$SCRIPT_DIR/templates/ai-collaboration-log.md" "$LOG_FILE"
     echo "Created $LOG_FILE"
   fi
+
+  AI_ENTRY="$REPO_ROOT/docs/AI-Entry.md"
+  if [[ -f "$AI_ENTRY" && "$FORCE" -ne 1 ]]; then
+    echo "Skipped $AI_ENTRY (already exists)."
+  else
+    render_template "$SCRIPT_DIR/../framework/templates/AI-Entry.md" "$AI_ENTRY"
+    echo "Created $AI_ENTRY"
+  fi
 fi
 
 if [[ "$WITH_DASHBOARD" -eq 1 ]]; then

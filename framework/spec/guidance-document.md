@@ -193,7 +193,23 @@ Recommended base interfaces:
 - `VerificationReport`: validation commands, results, and residual risks.
 - `RetrievalScope`: current context budget, allowed document tiers, loaded sources, expansion triggers, and reasons for reading deep sources.
 
-## 11. Visual Engine Integration
+## 11. AI Entry (Zero-Context Onboarding)
+
+Each serious project instance should provide `docs/AI-Entry.md` per [ai-entry.md](ai-entry.md).
+
+AI-Entry is a **meta-strategy** document: read order, depth, skips, and expansion triggers. It binds memory types to repository paths but must not duplicate domain engineering rules.
+
+Register AI-Entry in `documents` with `defaultRead: always` and task-scope retrieval tier. Recommended owner invocation: “Follow `docs/AI-Entry.md`.”
+
+## 12. Active Defect Handoff (Optional)
+
+Projects with interrupted or owner-assisted debugging may adopt active bug report directories per [active-bug-reports.md](active-bug-reports.md). Enable through AI-Entry optional packs and the document map.
+
+## 13. Instance Extraction Feedback
+
+When a concrete project refines collaboration documentation, follow [instance-extraction-feedback.md](instance-extraction-feedback.md) to port portable patterns into `framework/spec/` and research notes into `docs/research/`.
+
+## 14. Visual Engine Integration
 
 The visual engine reads a **guidance instance** plus a **project dashboard** when available. See [document-generation.md](document-generation.md) for the dashboard JSON contract and file layout.
 
@@ -212,7 +228,7 @@ The primary engine UI is organized as:
 
 The engine may edit project instances in future versions, but it should not silently modify the portable framework body. Framework-body changes should follow `changeControl`.
 
-## 12. Change Control
+## 15. Change Control
 
 Guidance documents should distinguish three change classes:
 
@@ -222,7 +238,7 @@ Guidance documents should distinguish three change classes:
 
 Each meaningful change should describe motivation, impact, validation, and rollback path.
 
-## 13. Self-Governance
+## 16. Self-Governance
 
 When a project develops the framework or its own guidance, it should record:
 

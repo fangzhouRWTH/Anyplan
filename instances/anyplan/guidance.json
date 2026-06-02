@@ -56,6 +56,24 @@
       "title": "Self application",
       "statement": "Anyplan development must record task intent, workflow stages, validation results, changed guidance, and open questions.",
       "rationale": "The framework should expose its own gaps through practical use."
+    },
+    {
+      "id": "ai-entry-first",
+      "title": "AI entry first",
+      "statement": "Each serious project instance should maintain docs/AI-Entry.md as the default zero-context onboarding path; owners may invoke it without repeating project background.",
+      "rationale": "A single meta-strategy entry reduces ad hoc briefing and keeps retrieval bounded."
+    },
+    {
+      "id": "sparse-defect-handoff",
+      "title": "Sparse defect handoff",
+      "statement": "Active bug report files are optional and rare; small fixes do not require handoff documentation. Portable rules live in framework/spec/active-bug-reports.md.",
+      "rationale": "Debug context packs help interrupted investigations without becoming a second issue tracker."
+    },
+    {
+      "id": "extraction-feedback-loop",
+      "title": "Extraction feedback loop",
+      "statement": "Lessons from instantiated projects must be restated in project-independent framework specs via the instance extraction feedback process; research notes alone are not framework definitions.",
+      "rationale": "Many projects will instantiate Anyplan; the framework must evolve through a repeatable extraction loop."
     }
   ],
   "roles": [
@@ -660,6 +678,71 @@
       "retrievalTier": "task-scope",
       "defaultRead": "always",
       "contextCost": "medium",
+      "lastReviewed": "2026-06-01"
+    },
+    {
+      "id": "ai-entry",
+      "title": "AI Entry",
+      "path": "docs/AI-Entry.md",
+      "kind": "framework",
+      "scope": "project",
+      "portable": false,
+      "memoryType": "task-scope",
+      "authority": "central-contract",
+      "retrievalTier": "task-scope",
+      "defaultRead": "always",
+      "contextCost": "small",
+      "lastReviewed": "2026-06-01"
+    },
+    {
+      "id": "ai-entry-spec",
+      "title": "AI Entry Specification",
+      "path": "framework/spec/ai-entry.md",
+      "kind": "spec",
+      "scope": "portable",
+      "portable": true,
+      "memoryType": "rule",
+      "retrievalTier": "phase-context",
+      "defaultRead": "on-demand",
+      "contextCost": "medium",
+      "readTriggers": [
+        "Adding or changing docs/AI-Entry.md in any instance",
+        "Designing zero-context onboarding for new projects"
+      ],
+      "lastReviewed": "2026-06-01"
+    },
+    {
+      "id": "extraction-feedback-spec",
+      "title": "Instance Extraction Feedback Process",
+      "path": "framework/spec/instance-extraction-feedback.md",
+      "kind": "spec",
+      "scope": "portable",
+      "portable": true,
+      "memoryType": "methodology",
+      "retrievalTier": "phase-context",
+      "defaultRead": "on-demand",
+      "contextCost": "medium",
+      "readTriggers": [
+        "Extracting patterns from a concrete project into the framework",
+        "Reviewing Anygine or other case-study feedback"
+      ],
+      "lastReviewed": "2026-06-01"
+    },
+    {
+      "id": "active-bug-reports-spec",
+      "title": "Active Bug Reports Specification",
+      "path": "framework/spec/active-bug-reports.md",
+      "kind": "spec",
+      "scope": "portable",
+      "portable": true,
+      "memoryType": "rule",
+      "retrievalTier": "deep-source",
+      "defaultRead": "on-demand",
+      "contextCost": "medium",
+      "readTriggers": [
+        "Enabling active bug reports in a project instance",
+        "Extracting debug handoff rules from Anygine"
+      ],
       "lastReviewed": "2026-06-01"
     },
     {

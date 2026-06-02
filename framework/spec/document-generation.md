@@ -236,7 +236,7 @@ scripts/serve.sh my-app 5173
 | --- | --- |
 | YAML frontmatter | `anyplan.index: true` and optional `anyplan.role: state` |
 | HTML comment (first 40 lines) | `<!-- anyplan-index: roadmap -->` |
-| Filename | `ProjectState.md`, `WorkingContract.md`, `ai-collaboration-log.md`, `*Roadmap*` |
+| Filename | `AI-Entry.md`, `ProjectState.md`, `WorkingContract.md`, `ai-collaboration-log.md`, `*Roadmap*` |
 | Path | `docs/adr/`, `docs/research/`, `docs/roadmap/` |
 | Guidance map | `guidance.json` → `documents[].path` ending in `.md` |
 | Dashboard link | any `documentPath` ending in `.md` inside `dashboard.json` |

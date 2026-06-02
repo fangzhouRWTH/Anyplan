@@ -1,9 +1,71 @@
 {
   "schemaVersion": "0.1.0",
   "projectId": "anyplan",
-  "generatedAt": "2026-06-01T10:03:17+00:00",
-  "entryCount": 13,
+  "generatedAt": "2026-06-02T02:00:14+00:00",
+  "entryCount": 19,
   "entries": [
+    {
+      "id": "docs-adr-0004-ai-entry-extraction-and-defect-handoff",
+      "path": "docs/adr/0004-ai-entry-extraction-and-defect-handoff.md",
+      "title": "ADR 0004: AI Entry, Instance Extraction Feedback, and Defect Handoff Docs",
+      "category": "decision",
+      "contentType": "markdown",
+      "summary": "Accepted",
+      "inclusionReason": "path:docs/adr/",
+      "sections": [
+        {
+          "level": 1,
+          "title": "ADR 0004: AI Entry, Instance Extraction Feedback, and Defect Handoff Docs",
+          "line": 1
+        },
+        {
+          "level": 2,
+          "title": "Status",
+          "line": 3
+        },
+        {
+          "level": 2,
+          "title": "Context",
+          "line": 7
+        },
+        {
+          "level": 2,
+          "title": "Decision",
+          "line": 24
+        },
+        {
+          "level": 3,
+          "title": "1. AI-Entry (portable + instance)",
+          "line": 26
+        },
+        {
+          "level": 3,
+          "title": "2. Instance extraction feedback process",
+          "line": 33
+        },
+        {
+          "level": 3,
+          "title": "3. Active defect handoff (from Anygine debug-doc practice)",
+          "line": 40
+        },
+        {
+          "level": 3,
+          "title": "4. Anygine backport",
+          "line": 46
+        },
+        {
+          "level": 2,
+          "title": "Consequences",
+          "line": 51
+        },
+        {
+          "level": 2,
+          "title": "Follow-up",
+          "line": 65
+        }
+      ],
+      "linkedFrom": []
+    },
     {
       "id": "docs-adr-readme",
       "path": "docs/adr/README.md",
@@ -130,22 +192,22 @@
         {
           "level": 2,
           "title": "Documentation Language",
-          "line": 28
+          "line": 30
         },
         {
           "level": 2,
           "title": "Open The Engine",
-          "line": 34
+          "line": 36
         },
         {
           "level": 2,
           "title": "First Working Contract",
-          "line": 50
+          "line": 52
         },
         {
           "level": 2,
           "title": "Research Notes",
-          "line": 62
+          "line": 64
         }
       ],
       "linkedFrom": [
@@ -466,7 +528,7 @@
       "category": "rule",
       "contentType": "markdown",
       "summary": "This research note records how Anyplan analyzed a concrete project and extracted candidate guidance patterns.",
-      "inclusionReason": "guidance:anygine-extraction-research; path:docs/research/",
+      "inclusionReason": "dashboard.completed:task-anygine-backport-ai-entry; guidance:anygine-extraction-research; path:docs/research/",
       "sections": [
         {
           "level": 1,
@@ -530,6 +592,7 @@
         }
       ],
       "linkedFrom": [
+        "dashboard.completed:task-anygine-backport-ai-entry",
         "guidance:anygine-extraction-research"
       ],
       "memoryType": "evidence",
@@ -572,7 +635,7 @@
         {
           "level": 2,
           "title": "Development Rule",
-          "line": 72
+          "line": 74
         }
       ],
       "linkedFrom": [
@@ -580,6 +643,153 @@
       ],
       "memoryType": "rule",
       "documentId": "framework-readme"
+    },
+    {
+      "id": "active-bug-reports-spec",
+      "path": "framework/spec/active-bug-reports.md",
+      "title": "Active Bug Reports Specification",
+      "category": "rule",
+      "contentType": "markdown",
+      "summary": "Portable specification for defect handoff documentation (debug context packs). Distilled from mature instance practice; not a general issue tracker.",
+      "inclusionReason": "guidance:active-bug-reports-spec",
+      "sections": [
+        {
+          "level": 1,
+          "title": "Active Bug Reports Specification",
+          "line": 1
+        },
+        {
+          "level": 2,
+          "title": "1. Purpose",
+          "line": 5
+        },
+        {
+          "level": 2,
+          "title": "2. Directory Layout (Recommended)",
+          "line": 15
+        },
+        {
+          "level": 2,
+          "title": "3. When to Create a Report",
+          "line": 29
+        },
+        {
+          "level": 2,
+          "title": "4. Report Contents",
+          "line": 39
+        },
+        {
+          "level": 2,
+          "title": "5. Lifecycle",
+          "line": 52
+        },
+        {
+          "level": 2,
+          "title": "6. Retrieval Tier",
+          "line": 61
+        },
+        {
+          "level": 2,
+          "title": "7. Authority",
+          "line": 69
+        },
+        {
+          "level": 2,
+          "title": "8. AI Rules (Portable)",
+          "line": 75
+        },
+        {
+          "level": 2,
+          "title": "9. Guidance and Manifest Integration",
+          "line": 82
+        },
+        {
+          "level": 2,
+          "title": "10. Framework vs Instance",
+          "line": 90
+        }
+      ],
+      "linkedFrom": [
+        "guidance:active-bug-reports-spec"
+      ],
+      "memoryType": "rule",
+      "documentId": "active-bug-reports-spec"
+    },
+    {
+      "id": "ai-entry-spec",
+      "path": "framework/spec/ai-entry.md",
+      "title": "AI Entry Specification",
+      "category": "rule",
+      "contentType": "markdown",
+      "summary": "This specification defines a portable AI-Entry document: a meta-strategy onboarding guide for AI collaborators with no prior project context.",
+      "inclusionReason": "filename:AI-Entry.md; guidance:ai-entry-spec",
+      "sections": [
+        {
+          "level": 1,
+          "title": "AI Entry Specification",
+          "line": 1
+        },
+        {
+          "level": 2,
+          "title": "1. Purpose",
+          "line": 7
+        },
+        {
+          "level": 2,
+          "title": "2. Relationship to Other Documents",
+          "line": 18
+        },
+        {
+          "level": 2,
+          "title": "3. Required Sections (Instance `docs/AI-Entry.md`)",
+          "line": 43
+        },
+        {
+          "level": 3,
+          "title": "3.1 Purpose (generic)",
+          "line": 47
+        },
+        {
+          "level": 3,
+          "title": "3.2 Default Read Order",
+          "line": 51
+        },
+        {
+          "level": 3,
+          "title": "3.3 Read Depth Guide",
+          "line": 62
+        },
+        {
+          "level": 3,
+          "title": "3.4 Do Not Read By Default",
+          "line": 78
+        },
+        {
+          "level": 3,
+          "title": "3.5 Context Expansion Triggers",
+          "line": 88
+        },
+        {
+          "level": 3,
+          "title": "3.6 Optional Packs (Instance Toggles)",
+          "line": 99
+        },
+        {
+          "level": 3,
+          "title": "3.7 Path Bindings (Instance Only)",
+          "line": 111
+        },
+        {
+          "level": 3,
+          "title": "3.8 After Context Recovery",
+          "line": 115
+        }
+      ],
+      "linkedFrom": [
+        "guidance:ai-entry-spec"
+      ],
+      "memoryType": "rule",
+      "documentId": "ai-entry-spec"
     },
     {
       "id": "guidance-spec",
@@ -647,7 +857,7 @@
         },
         {
           "level": 2,
-          "title": "11. Visual Engine Integration",
+          "title": "11. AI Entry (Zero-Context Onboarding)",
           "line": 196
         }
       ],
@@ -656,6 +866,72 @@
       ],
       "memoryType": "rule",
       "documentId": "guidance-spec"
+    },
+    {
+      "id": "extraction-feedback-spec",
+      "path": "framework/spec/instance-extraction-feedback.md",
+      "title": "Instance Extraction Feedback Process",
+      "category": "rule",
+      "contentType": "markdown",
+      "summary": "This document defines how concrete project instances (for example Anygine) feed lessons back into the portable Anyplan framework without polluting the framework with domain-specific rules.",
+      "inclusionReason": "guidance:extraction-feedback-spec",
+      "sections": [
+        {
+          "level": 1,
+          "title": "Instance Extraction Feedback Process",
+          "line": 1
+        },
+        {
+          "level": 2,
+          "title": "1. When to Run Extraction",
+          "line": 7
+        },
+        {
+          "level": 2,
+          "title": "2. Roles",
+          "line": 19
+        },
+        {
+          "level": 2,
+          "title": "3. Process Steps",
+          "line": 27
+        },
+        {
+          "level": 2,
+          "title": "4. Extraction Research Note Template",
+          "line": 58
+        },
+        {
+          "level": 2,
+          "title": "5. Quality Gate (Framework Merge Checklist)",
+          "line": 74
+        },
+        {
+          "level": 2,
+          "title": "6. AI-Assisted Extraction Prompt",
+          "line": 86
+        },
+        {
+          "level": 2,
+          "title": "7. Anti-Patterns",
+          "line": 96
+        },
+        {
+          "level": 2,
+          "title": "8. Deliverables per Extraction Cycle",
+          "line": 106
+        },
+        {
+          "level": 2,
+          "title": "9. Relation to Visual Engine",
+          "line": 117
+        }
+      ],
+      "linkedFrom": [
+        "guidance:extraction-feedback-spec"
+      ],
+      "memoryType": "methodology",
+      "documentId": "extraction-feedback-spec"
     },
     {
       "id": "project-state",
@@ -723,6 +999,130 @@
       ],
       "memoryType": "state",
       "documentId": "project-state"
+    },
+    {
+      "id": "ai-entry",
+      "path": "docs/AI-Entry.md",
+      "title": "AI Entry",
+      "category": "task-scope",
+      "contentType": "markdown",
+      "summary": "Zero-context onboarding for AI collaborators on Anyplan. Navigate memory by type and depth; do not scan the whole repository.",
+      "inclusionReason": "dashboard.completed:task-ai-entry-adr4; filename:AI-Entry.md; frontmatter:anyplan.index; guidance:ai-entry",
+      "sections": [
+        {
+          "level": 1,
+          "title": "AI Entry",
+          "line": 2
+        },
+        {
+          "level": 2,
+          "title": "1. What This File Is",
+          "line": 8
+        },
+        {
+          "level": 2,
+          "title": "2. Default Read Order",
+          "line": 18
+        },
+        {
+          "level": 2,
+          "title": "3. Read Depth",
+          "line": 35
+        },
+        {
+          "level": 2,
+          "title": "4. Do Not Read By Default",
+          "line": 50
+        },
+        {
+          "level": 2,
+          "title": "5. Context Expansion Triggers",
+          "line": 59
+        },
+        {
+          "level": 2,
+          "title": "6. Optional Packs (Anyplan Instance)",
+          "line": 70
+        },
+        {
+          "level": 2,
+          "title": "7. Working on Anyplan vs Other Projects",
+          "line": 80
+        },
+        {
+          "level": 2,
+          "title": "8. After Context Recovery",
+          "line": 88
+        },
+        {
+          "level": 2,
+          "title": "9. Owner Invocation",
+          "line": 104
+        }
+      ],
+      "linkedFrom": [
+        "dashboard.completed:task-ai-entry-adr4",
+        "guidance:ai-entry"
+      ],
+      "memoryType": "task-scope",
+      "documentId": "ai-entry"
+    },
+    {
+      "id": "framework-templates-ai-entry",
+      "path": "framework/templates/AI-Entry.md",
+      "title": "AI Entry",
+      "category": "task-scope",
+      "contentType": "markdown",
+      "summary": "Zero-context onboarding path for AI collaborators. Read this file first when the owner does not provide extra briefing.",
+      "inclusionReason": "filename:AI-Entry.md; frontmatter:anyplan.index",
+      "sections": [
+        {
+          "level": 1,
+          "title": "AI Entry",
+          "line": 2
+        },
+        {
+          "level": 2,
+          "title": "1. What This File Is",
+          "line": 8
+        },
+        {
+          "level": 2,
+          "title": "2. Default Read Order",
+          "line": 16
+        },
+        {
+          "level": 2,
+          "title": "3. Read Depth",
+          "line": 31
+        },
+        {
+          "level": 2,
+          "title": "4. Do Not Read By Default",
+          "line": 46
+        },
+        {
+          "level": 2,
+          "title": "5. Context Expansion Triggers",
+          "line": 55
+        },
+        {
+          "level": 2,
+          "title": "6. Optional Packs (This Instance)",
+          "line": 67
+        },
+        {
+          "level": 2,
+          "title": "7. After Context Recovery",
+          "line": 76
+        },
+        {
+          "level": 2,
+          "title": "8. Validation",
+          "line": 86
+        }
+      ],
+      "linkedFrom": []
     }
   ]
 }

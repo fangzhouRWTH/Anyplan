@@ -128,6 +128,23 @@
       "phaseId": "phase-1-bootstrap",
       "documentPath": "framework/spec/document-generation.md",
       "documentId": "document-generation-spec"
+    },
+    {
+      "id": "task-ai-entry-adr4",
+      "title": "AI-Entry, extraction process, defect handoff specs",
+      "completedAt": "2026-06-01",
+      "summary": "ADR 0004, framework/spec/ai-entry.md, instance-extraction-feedback.md, active-bug-reports.md, docs/AI-Entry.md.",
+      "phaseId": "phase-1-bootstrap",
+      "documentPath": "docs/AI-Entry.md",
+      "documentId": "ai-entry"
+    },
+    {
+      "id": "task-anygine-backport-ai-entry",
+      "title": "Anygine AI-Entry backport",
+      "completedAt": "2026-06-01",
+      "summary": "Doc/AI-Entry.md and GuidanceManifest startup path in Anygine.",
+      "phaseId": "phase-1-bootstrap",
+      "documentPath": "docs/research/anygine-framework-extraction.md"
     }
   ],
   "currentPhase": {

@@ -67,6 +67,8 @@ Visual engines and automation tools should not infer workflow structure from pro
 
 Project dashboards (`instances/<project-id>/dashboard.json`) supply overview, roadmap, and task progress for the visual engine. Format: [spec/document-generation.md](spec/document-generation.md).
 
+Zero-context AI onboarding: [spec/ai-entry.md](spec/ai-entry.md) (`docs/AI-Entry.md` per instance). Defect handoff: [spec/active-bug-reports.md](spec/active-bug-reports.md). Instance → framework feedback: [spec/instance-extraction-feedback.md](spec/instance-extraction-feedback.md).
+
 New fields should be added so older tools can safely ignore them when possible. Breaking schema changes should include a version bump and migration note.
 
 ## Development Rule
